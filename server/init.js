@@ -9,6 +9,8 @@
 ** to handle the addition of users to the data model.
 */
 const mongoose= require('mongoose');
+const bcrypt = require('bcrypt');
+
 import CommunityModel from './models/communities';
 import CommentModel from './models/comments';
 import LinkFlairModel from './models/linkflairs';
@@ -163,4 +165,20 @@ async function initializeDB()
     let communityRef1 = await createCommunity(community1);
     console.log(communityRef1);
     let communityRef2 = await createCommunity(community2);
+}
+
+async function encryptPassword(password)
+{
+    const saltRounds=  10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password,salt);
+}
+
+async function verifyPassword(password, hash)
+{
+    if(await bcrypt.compare(password, hash))
+        {
+            return true
+        }
+    return false;
 }

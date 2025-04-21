@@ -1,0 +1,33 @@
+.welcomepage-header
+{
+    text-align:center;
+}
+
+.welcomepage-button-container
+{
+    display:grid;
+    grid-template-columns:4fr 3fr 3fr 3fr 4fr;
+    grid-template-rows:1fr;
+}
+
+.welcomepage-buttons{
+    font-size:24px;
+    border-radius: 60px;
+    background-color: #e6ecef;
+    border:none;
+    margin:20px;
+    height: 50px;
+}
+#register-button{
+    grid-column: 2;
+    grid-row:1;
+}
+#login-button{
+    grid-column: 3;
+    grid-row:1;
+}
+#guest-button{
+    grid-column: 4;
+    grid-row:1;
+}
+
