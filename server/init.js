@@ -15,8 +15,17 @@ import CommunityModel from './models/communities';
 import CommentModel from './models/comments';
 import LinkFlairModel from './models/linkflairs';
 
-mongoose.connect = 'arg1'
+
+let userArgs = process.argv.slice(2);
+
+if (!userArgs[0].startsWith('mongodb')) 
+    {
+    console.log('ERROR: You need to specify a valid mongodb URL as the first argument');
+    return
+}
+mongoose.connect = userArgs[0]
 const db = mongoose.connection;
+db.on('error', console.error.bind(console, "MongoDB connection error"));
 function createCommunity (community)
 {
     // const community = 
@@ -80,7 +89,7 @@ async function initializeDB()
         commentID: 'comment7',
         content: 'Generic poster slogan #42',
         commentIDs: [],
-        commentedBy: 'bigfeet',
+        // commentedBy: 'bigfeet',
         commentedDate: new Date('September 10, 2024 09:43:00'),
     };
     let commentRef7 = await createComment(comment7);
@@ -89,7 +98,7 @@ async function initializeDB()
         commentID: 'comment6',
         content: 'I want to believe.',
         commentIDs: [commentRef7],
-        commentedBy: 'outtheretruth47',
+        // commentedBy: 'outtheretruth47',
         commentedDate: new Date('September 10, 2024 07:18:00'),
     };
     let commentRef6 = await createComment(comment6);
@@ -98,7 +107,7 @@ async function initializeDB()
         commentID: 'comment5',
         content: 'The same thing happened to me. I guest this channel does still show real history.',
         commentIDs: [],
-        commentedBy: 'bigfeet',
+        // commentedBy: 'bigfeet',
         commentedDate: new Date('September 09, 2024 017:03:00'),
     }
     let commentRef5 = await createComment(comment5);
@@ -107,7 +116,7 @@ async function initializeDB()
         commentID: 'comment4',
         content: 'The truth is out there.',
         commentIDs: [commentRef6],
-        commentedBy: "astyanax",
+        // commentedBy: "astyanax",
         commentedDate: new Date('September 10, 2024 6:41:00'),
     };
     let commentRef4 = await createComment(comment4);
@@ -116,7 +125,7 @@ async function initializeDB()
         commentID: 'comment3',
         content: 'My brother in Christ, are you ok? Also, YTJ.',
         commentIDs: [],
-        commentedBy: 'rollo',
+        // commentedBy: 'rollo',
         commentedDate: new Date('August 23, 2024 09:31:00'),
     };
     let commentRef3 = await createComment(comment3);
@@ -125,7 +134,7 @@ async function initializeDB()
         commentID: 'comment2',
         content: 'Obvious rage bait, but if not, then you are absolutely the jerk in this situation. Please delete your Tron vehicle and leave is in peace.  YTJ.',
         commentIDs: [],
-        commentedBy: 'astyanax',
+        // commentedBy: 'astyanax',
         commentedDate: new Date('August 23, 2024 10:57:00'),
     };
     let commentRef2 = await createComment(comment2);
@@ -134,7 +143,7 @@ async function initializeDB()
         commentID: 'comment1',
         content: 'There is no higher calling than the protection of Tesla products.  God bless you sir and God bless Elon Musk. Oh, NTJ.',
         commentIDs: [commentRef3],
-        commentedBy: 'shemp',
+        // commentedBy: 'shemp',
         commentedDate: new Date('August 23, 2024 08:22:00'),
     };
     let commentRef1 = await createComment(comment1);
