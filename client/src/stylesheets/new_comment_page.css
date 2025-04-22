@@ -1,0 +1,53 @@
+.new-comment-container
+{
+    margin: 20px;
+    font-weight:bold;
+}
+
+.new-comment-header-container{
+    display:grid;
+    grid-template-columns: 2fr 2fr 2fr;
+    grid-template-rows: 1fr;
+    margin:20px;
+}
+#comment-requirement
+{
+    grid-column:3;
+}
+
+#new-comment-content-container{
+    margin:10px 0;
+}
+
+#new-comment-content{
+    display:block;
+    width:40%;
+    scroll-behavior:auto;
+
+}
+#new-comment-submit-container{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns: 5fr 4fr 3fr;
+}
+
+#new-comment-username-container{
+    display:inline-block;
+    grid-column: 1;
+}
+#new-comment-submit-button{
+    grid-column:3;
+    width:120px;
+}
+
+.new-requirement::before{
+    content: '*';
+    color: red;
+}
+.button{
+    font-size:12px;
+    border-radius: 20px;
+    background-color: #e6ecef;
+    border:none;
+    height: 25px;
+}

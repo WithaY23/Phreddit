@@ -2,11 +2,13 @@
 // ************** DEFINE YOUR REACT COMPONENTS in ./components directory **************
 import './stylesheets/App.css';
 import Phreddit from './components/phreddit.js'
+import WelcomePage from './components/WelcomePage.js';
+import Main_Content from './components/main_content.js';
 
 function App() {
   return (
     <section className="phreddit">
-      <Phreddit />
+      <Main_Content />
     </section>
   );
 }
