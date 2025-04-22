@@ -2,7 +2,10 @@
 // The server should run on localhost port 8000.
 // This is where you should start writing server-side code for this application.
 const express = require('express');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const cors = require('cors');
+
 
 const app = express();
 const port = 8000;

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const LinkflairSchema = new Schema({
-    content:{type: String, maxLength: 30},
+    content:{type: String, maxLength: 30, required: true},
     //each linkflair can have 0 or more posts, not required
     postIDs: [{type: Schema.Types.ObjectId, ref:'Post'}] 
 });
