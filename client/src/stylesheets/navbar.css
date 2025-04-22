@@ -1,0 +1,135 @@
+/* Add CSS stylesheet */
+
+*{
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
+
+/* Phreddish color:
+Orangered
+#FF4500
+RGBA(255, 67, 0, 1) 
+
+NEED TO adjust nav bar content size to fit ul list, or somehow deal with the padding present
+*/
+/* .below-header{
+    display:grid;
+    grid-template-columns: 3fr 16fr;
+
+    margin:0px;
+    height:100%;
+} */
+
+/* .nav-sidebar{
+    grid-column:1;
+
+    height:100%; */
+    /* font-family:'Courier New', Courier, monospace; Change when necessary */
+    /* margin:0px 0px 0px 0px;
+    border-right: 1px solid rgba(0, 0, 0, 0.217); */
+    /* Padding spaces the content away from the immediate top, could use margin to move entire box but used padding 
+       Padding doesn't change border*/
+    /* padding: 20px 0px 0px 0px;
+
+ } */
+ /*
+.main-content{
+    grid-column:2;
+
+    padding: 14px 0px 0px 0px;
+
+} */
+.nav-sidebar{
+    grid-column:1;
+
+    /*height:88vh;*/
+    height: 90%;
+    /* font-family:'Courier New', Courier, monospace; Change when necessary */
+    margin:0px 0px 0px 0px;
+    border-right: 1px solid rgba(0, 0, 0, 0.217);
+    /* Padding spaces the content away from the immediate top, could use margin to move entire box but used padding 
+       Padding doesn't change border*/
+    padding: 0px 0px 0px 0px;
+    overflow-y:auto;
+
+}
+
+.black-line-bottom
+{
+    /* display:grid; */
+    /* grid-template-columns: 2fr 1fr 3fr;
+    grid-template-rows: 2fr 1fr 3fr; */
+    height:50px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.217);
+
+    
+}
+
+.button.button-home-container{
+    display:grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    grid-template-rows: 2fr 1fr 2fr;
+    height:35px;
+    background-color: lightgray;
+    margin: 20px 10px 0px 10px;
+}
+.button-home{
+    color:black;
+    font-size:14px;
+    /* adjust padding and border as needed,
+        padding is necessary to have a "background" of the link change to phreddish color
+        as noted in #1 p1
+    */
+
+    /* put button in middle, adjust to more accurate measure, uses container as adjustment reference
+        also depends on size of button
+    */
+    /* margin: 0px 0px 0px 25%; */
+
+
+    grid-column:2;
+    grid-row:2;
+
+    padding:2px;
+    text-decoration:none;
+    background-color: lightgray;
+
+}
+.button-home:hover{
+    cursor: pointer;
+}
+
+
+
+#button-create-community
+{
+    background-color:rgba(92, 91, 91, 0.45);
+    margin-right:5px;
+
+
+}
+
+#community-list
+{
+    /* no bullets and no spacing */
+    list-style-type: none;
+    padding:0px;
+}
+
+a:hover.button-home, #button-create-community:hover, #button-create-community:active{
+    background-color:orangered
+}
+
+.unstyled-button {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+  }

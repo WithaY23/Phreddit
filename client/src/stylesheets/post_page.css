@@ -1,0 +1,92 @@
+#community-name{
+    font-weight:bold;
+    font-size:15px;
+    display:inline-block;
+    padding-right:5px;
+    border-right: 2px solid rgba(0, 0, 0, 0.217);
+}
+#post-timestamp{
+    padding-left: 3px;
+    font-size:13px;
+}
+#post-username{
+    font-size:15px;
+    margin-top:5px;
+}
+#post-title{
+    margin-bottom:5px;
+}
+.link-flair
+{
+    font-size:12px;
+    font-weight:bold;
+    margin:5px;
+
+}
+
+#post-content{
+    font-size:15px;
+    margin-top:10px;
+}
+.comment-button{
+    margin:8px 0px;
+    color:red;
+    height:30px;
+    padding:5px 10px 15px 10px;
+}
+
+.counters{
+    margin-top:20px;
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 13fr;
+    grid-template-rows:1fr 1fr;
+    height:40px;
+}
+
+#view-label{
+    font-size:14px;
+    grid-column:1;
+    grid-row:1;
+}
+
+#comment-label{
+    font-size:14px;
+    grid-column:3;
+    grid-row:1;
+}
+
+#view-count{
+    font-size:14px;
+    grid-column:1;
+    grid-row:2;
+}
+
+#comment-count{
+    font-size:14px;
+    grid-column:3;
+    grid-row:2;
+}
+.comment-section{
+    font-size:15px;
+    border-top: 1px solid black;
+    overflow-y:auto;
+    overflow-x:auto;
+}
+
+.comment{
+    padding-top:8px;
+}
+.comment-content{
+    margin-bottom:5px;
+}
+.comment-username{
+    font-style:italic;
+    font-size:13px;
+    padding-right:5px;
+    border-right: 1px solid rgba(0, 0, 0, 0.217);
+    margin-right:5px;
+}
+
+.sub-comment-container{
+    margin-left: 10px;
+}
