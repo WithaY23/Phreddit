@@ -15,6 +15,7 @@ const CommentModel = require('./models/comments');
 const LinkFlairModel = require('./models/linkflairs');
 const PostModel = require('./models/posts');
 const UserModel = require('./models/users');
+const {encryptPassword, verifyPassword} = require("./encrpytion")
 
 //command parameter [database, admin email, displayname, password]
 //command: node server/init.js mongodb://127.0.0.1:27017/phreddit email displayname password
@@ -220,6 +221,7 @@ async function initializeDB()
     let communityRef1 = await createCommunity(community1);
     console.log(communityRef1);
     let communityRef2 = await createCommunity(community2);
+    
 }
 
 function createCommunity (community)
@@ -258,19 +260,4 @@ function createUser(user){
     return newUser.save();
 }
 
-async function encryptPassword(password)
-{
-    const saltRounds=  10;
-    const salt = await bcrypt.genSalt(saltRounds);
-    const hashedPassword = await bcrypt.hash(password,salt);
-    return hashedPassword;
-}
 
-async function verifyPassword(password, hash)
-{
-    if(await bcrypt.compare(password, hash))
-        {
-            return true
-        }
-    return false;
-}
