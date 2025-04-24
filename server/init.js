@@ -10,22 +10,33 @@
 */
 const mongoose= require('mongoose');
 const bcrypt = require('bcrypt');
+const CommunityModel = require('./models/communities');
+const CommentModel = require('./models/comments');
+const LinkFlairModel = require('./models/linkflairs');
+const PostModel = require('./models/posts');
+const UserModel = require('./models/users');
 
-import CommunityModel from './models/communities';
-import CommentModel from './models/comments';
-import LinkFlairModel from './models/linkflairs';
-
-
+//command parameter [database, admin email, displayname, password]
+//command: node server/init.js mongodb://127.0.0.1:27017/phreddit email displayname password
+//userArgs
+//[sliced] -> node.js
+//[sliced] -> path of script
+//[0] -> database [1] -> email [2] -> name [3] -> password
 let userArgs = process.argv.slice(2);
+const mongoDB = userArgs[0];
+const adminEmail = userArgs[1];
+const adminName = userArgs[2];
+const adminPassword = userArgs[3];
 
-if (!userArgs[0].startsWith('mongodb')) 
-    {
-    console.log('ERROR: You need to specify a valid mongodb URL as the first argument');
+if(!mongoDB || !adminEmail || !adminName || !adminPassword){
+    console.error('Use Format: node server/init.js <mongoDB> <adminEmail> <adminName> <adminPassword>')
     return
 }
-mongoose.connect = userArgs[0]
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, "MongoDB connection error"));
+if (!mongoDB.startsWith('mongodb')){
+    console.error('ERROR: You need to specify a valid mongodb URL as the first argument');
+    return
+}
+ 
 function createCommunity (community)
 {
     // const community = 
@@ -49,12 +60,35 @@ function createComment(comment)
     const newComment = new CommentModel(comment);
     return newComment.save();
 }
+function createPost(post){
+    const newPost = new PostModel(post);
+    return newPost.save();
+}
+function createUser(user){
+    const newUser = new UserModel(user);
+    return newUser.save();
+}
+
 async function initializeDB()
 {
+    mongoose.connect(mongoDB);
+    const db = mongoose.connection;
+    db.on('error', console.error.bind(console, "MongoDB connection error"));
+
     //order: User/ Linkflair (should probably remove postIDs), Post, Comments/Communities 
+   
+    //create admin user object
+    const hashedPassword = await encryptPassword(adminPassword);
+    const adminUser = new UserModel({
+        email: adminEmail,
+        displayName: adminName,
+        passwordHash: hashedPassword,
+        reputation: 1000,
+        isAdmin: true
+    });
+    await adminUser.save() //save the admin user into 'User' database
 
     //link flairs
-
     const linkFlair1 = { // link flair 1
         linkFlairID: 'lf1',
         content: 'The jerkstore called...', 
@@ -181,6 +215,7 @@ async function encryptPassword(password)
     const saltRounds=  10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(password,salt);
+    return hashedPassword;
 }
 
 async function verifyPassword(password, hash)
