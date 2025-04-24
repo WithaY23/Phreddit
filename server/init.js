@@ -56,7 +56,36 @@ async function initializeDB()
         reputation: 1000,
         isAdmin: true
     });
-    await adminUser.save() //save the admin user into 'User' database
+
+    const hash1 = await encryptPassword("bigfeet");
+    const user1 = new UserModel({
+        email: "bigfeet@gmail.com",
+        displayName: "bigfeet",
+        passwordHash: hash1,
+        reputation: 100,
+        isAdmin: false
+    });
+
+    const hash2 = await encryptPassword("astyanax");
+    const user2 = new UserModel({
+        email: "astyanax@aol.com",
+        displayName: "astyanax",
+        passwordHash: hash2,
+        reputation: 100,
+        isAdmin: false
+    });
+
+    const hash3 = await encryptPassword("rollo");
+    const user3 = new UserModel({
+        email: "rollo@outlook.com",
+        displayName: "rollo",
+        passwordHash: hash3,
+        reputation: 100,
+        isAdmin: false
+    });
+
+
+    const admin = await adminUser.save(); //save the admin user into 'User' database
 
     //link flairs
     const linkFlair1 = { // link flair 1
@@ -88,12 +117,18 @@ async function initializeDB()
     // let linkFlairRef5 = await createLinkFlair(linkFlair5);
 
 
+
+
+
+
+
+
     //comments
     const comment7 = { // comment 7
         commentID: 'comment7',
         content: 'Generic poster slogan #42',
         commentIDs: [],
-        // commentedBy: 'bigfeet',
+        commentedBy: user1,
         commentedDate: new Date('September 10, 2024 09:43:00'),
     };
     let commentRef7 = await createComment(comment7);
@@ -111,7 +146,7 @@ async function initializeDB()
         commentID: 'comment5',
         content: 'The same thing happened to me. I guest this channel does still show real history.',
         commentIDs: [],
-        // commentedBy: 'bigfeet',
+        commentedBy: user1,
         commentedDate: new Date('September 09, 2024 017:03:00'),
     }
     let commentRef5 = await createComment(comment5);
@@ -120,7 +155,7 @@ async function initializeDB()
         commentID: 'comment4',
         content: 'The truth is out there.',
         commentIDs: [commentRef6],
-        // commentedBy: "astyanax",
+        commentedBy: user2,
         commentedDate: new Date('September 10, 2024 6:41:00'),
     };
     let commentRef4 = await createComment(comment4);
@@ -129,7 +164,7 @@ async function initializeDB()
         commentID: 'comment3',
         content: 'My brother in Christ, are you ok? Also, YTJ.',
         commentIDs: [],
-        // commentedBy: 'rollo',
+        commentedBy: user3,
         commentedDate: new Date('August 23, 2024 09:31:00'),
     };
     let commentRef3 = await createComment(comment3);
@@ -138,7 +173,7 @@ async function initializeDB()
         commentID: 'comment2',
         content: 'Obvious rage bait, but if not, then you are absolutely the jerk in this situation. Please delete your Tron vehicle and leave is in peace.  YTJ.',
         commentIDs: [],
-        // commentedBy: 'astyanax',
+        commentedBy: user2,
         commentedDate: new Date('August 23, 2024 10:57:00'),
     };
     let commentRef2 = await createComment(comment2);
@@ -154,6 +189,13 @@ async function initializeDB()
     console.log("AHH after comments")
 
 
+
+
+
+
+
+
+
     //communities
 
     // community objects
@@ -163,7 +205,7 @@ async function initializeDB()
         description: 'A practical application of the principles of justice.',
         postIDs: [postRef1],
         startDate: new Date('August 10, 2014 04:18:00'),
-        // members: ['rollo', 'shemp', 'catlady13', 'astyanax', 'trucknutz69'], //USER reference
+        members: [user3, 'shemp', 'catlady13', user2, 'trucknutz69'], //USER reference
         memberCount: 4,
     };
     const community2 = { // community object 2
@@ -172,7 +214,7 @@ async function initializeDB()
         description: 'A fantastical reimagining of our past and present.',
         postIDs: [postRef2],
         startDate: new Date('May 4, 2017 08:32:00'),
-        // members: ['MarcoArelius', 'astyanax', 'outtheretruth47', 'bigfeet'], //USER reference
+        members: ['MarcoArelius', user2, 'outtheretruth47', user1], //USER reference
         memberCount: 4,
     };
     let communityRef1 = await createCommunity(community1);
