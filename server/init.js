@@ -37,37 +37,7 @@ if (!mongoDB.startsWith('mongodb')){
     return
 }
  
-function createCommunity (community)
-{
-    // const community = 
-    // {
-    //     name: communityObj.name,
-    //     description: communityObj.description,
-    //     postIDs: communityObj.postIDs,
-    //     startDate: 
-
-    // }
-    const newCommunity = new CommunityModel(community);
-    return newCommunity.save();
-}
-function createLinkFlair(linkflair)
-{
-    const newLinkFlair = new LinkFlairModel(linkflair);
-    return newLinkFlair.save();
-}
-function createComment(comment)
-{
-    const newComment = new CommentModel(comment);
-    return newComment.save();
-}
-function createPost(post){
-    const newPost = new PostModel(post);
-    return newPost.save();
-}
-function createUser(user){
-    const newUser = new UserModel(user);
-    return newUser.save();
-}
+initializeDB(); //start initializing 
 
 async function initializeDB()
 {
@@ -208,6 +178,42 @@ async function initializeDB()
     let communityRef1 = await createCommunity(community1);
     console.log(communityRef1);
     let communityRef2 = await createCommunity(community2);
+}
+
+function createCommunity (community)
+{
+    // const community = 
+    // {
+    //     name: communityObj.name,
+    //     description: communityObj.description,
+    //     postIDs: communityObj.postIDs,
+    //     startDate: 
+
+    // }
+    const newCommunity = new CommunityModel(community);
+    return newCommunity.save();
+}
+
+function createLinkFlair(linkflair)
+{
+    const newLinkFlair = new LinkFlairModel(linkflair);
+    return newLinkFlair.save();
+}
+
+function createComment(comment)
+{
+    const newComment = new CommentModel(comment);
+    return newComment.save();
+}
+
+function createPost(post){
+    const newPost = new PostModel(post);
+    return newPost.save();
+}
+
+function createUser(user){
+    const newUser = new UserModel(user);
+    return newUser.save();
 }
 
 async function encryptPassword(password)
