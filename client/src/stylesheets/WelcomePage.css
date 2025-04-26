@@ -1,3 +1,10 @@
+
+#welcomepage{
+    background: rgb(244, 47, 47);
+    height:100vh;
+    margin:0px;
+}
+
 .welcomepage-header
 {
     text-align:center;
@@ -6,6 +13,8 @@
 .welcomepage-button-container
 {
     display:grid;
+    background-color:white;
+    margin:0px 200px;
     grid-template-columns:4fr 3fr 3fr 3fr 4fr;
     grid-template-rows:1fr;
 }
