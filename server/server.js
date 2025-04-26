@@ -13,7 +13,7 @@ const Community = require('./models/communities');
 const Linkflair = require('./models/linkflairs');
 const Post = require('./models/posts');
 const User = require('./models/users');
-const {encryptPassword, verifyPassword} = require("./encrpytion")
+const {encrypt, verifyEncryption} = require("./encrpytion")
 
 const app = express();
 const port = 8000;
@@ -336,13 +336,13 @@ app.get("/users/", async (req,res) => {
   }
 })
 
-app.get("/users/:displayName", async (req,res) => {
+app.get("/users/username/:displayName", async (req,res) => {
   try
   {
     const displayName = req.params["displayName"];
     const users = await User.find();
     const user = users.find(async (user) => {
-      await verifyPassword(displayName, user.displayName)
+      await verifyEncryption(displayName, user.displayName)
     })
     if(user)
     {
@@ -357,6 +357,35 @@ app.get("/users/:displayName", async (req,res) => {
   {
     res.status(500).send({error: "Failed to get user", err})
   }
+})
+
+// Try to find user email and password
+app.post("/users/login/:emailAddress/:password", async (req,res) => {
+    try
+    {
+      const emailAddress = req.params["emailAddress"];
+      const password = req.params["password"];
+      const users = await User.find();
+      const user = users.find(async (user) => {
+        await verifyEncryption(emailAddress, user.email)
+      })
+      if(user)
+      {
+        if(await verifyEncryption(password, user.passwordHash)) // Password matched database password associated with email
+        {
+            res.status(200).send(user);
+        }
+        res.status(500).send({error: "Failed to find user"})
+      }
+      else
+      {
+        res.status(500).send({error: "Failed to find user"})
+      }
+    }
+    catch(err)
+    {
+      res.status(500).send({error: "Failed to get user", err})
+    }
 })
 //start the server
 app.listen(8000, () => {console.log("Server listening on port 8000...");});
