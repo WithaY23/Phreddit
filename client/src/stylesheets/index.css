@@ -88,7 +88,7 @@ code {
 .main-content{
   grid-column:2;
   overflow-y:auto;
-  height:88vh;
+  height:100vh; /*changed from 88 to 100*/
 }
 .main-content-header{
   display: flex;

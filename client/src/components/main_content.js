@@ -10,6 +10,7 @@ import Banner from './banner.js';
 import NewPostPage from './new_post_page.js';
 
 import WelcomePage from './WelcomePage.js';
+import LoginPage from './login_page.js'
 import axios from 'axios';
 
 //const model = new Model();
@@ -32,6 +33,9 @@ export default function Main_Content()
     const [xposts, setXposts] = useState("");
     //create a sort type for new old active: default newest
     const [sortType, setSortType] = useState("newest");
+
+    const noBannerPages = ["Welcome-Page", "Login-Page"];
+
     useEffect(() => 
     {
         const get_data = async () =>{
@@ -184,6 +188,10 @@ export default function Main_Content()
                 return (
                     <WelcomePage view={view} setView={setView} ></WelcomePage>
                 )
+            case "Login-Page":
+                return(
+                    <LoginPage view={view} setView={setView}></LoginPage>
+                )
             default:
                 alert("AHHHHH");
                 console.log("AHHHHHHHHHH");
@@ -193,7 +201,7 @@ export default function Main_Content()
 
     return (
         <>
-            {view !== "Welcome-Page" && (
+            {!noBannerPages.includes(view) && (
                 <>
                     <Banner view={view} setView={setView} setSearchTerms={setSearchTerms}/>
                     <div className="below-header">
@@ -204,10 +212,10 @@ export default function Main_Content()
                     </div>
                 </>
             )}
-            {view === "Welcome-Page" && (
+            {noBannerPages.includes(view) && (
                 <div className="main-content">
-                {display()}
-            </div>
+                    {display()}
+                </div>
             )}
         </>
         )

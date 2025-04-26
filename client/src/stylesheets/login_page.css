@@ -1,0 +1,45 @@
+body,html{
+    margin: 0;
+    padding: 0;
+}
+
+.login-page{
+    background: rgb(244, 47, 47);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* ✅ use full viewport height */
+    margin: 0; /* optional safety */
+}
+
+.login-container{
+    background: rgb(255, 255, 255);
+    padding: 40px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+}
+
+.login-form{
+    display: flex;
+    flex-direction: column;    
+    gap: 10px;
+}
+
+.login-form label{
+    text-align: left;
+    font-weight: bold;
+}
+
+.login-form input{
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.login-form button{
+    padding: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+
+}
