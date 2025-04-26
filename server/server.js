@@ -3,6 +3,7 @@
 // This is where you should start writing server-side code for this application.
 const express = require('express');
 const session = require('express-session');
+const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 const cors = require('cors');
 

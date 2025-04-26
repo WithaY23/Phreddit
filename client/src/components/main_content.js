@@ -193,14 +193,23 @@ export default function Main_Content()
 
     return (
         <>
-        <Banner view={view} setView={setView} setSearchTerms={setSearchTerms}/>
-    <div className="below-header">
-            <NavBar view={view} page={page} communities={communitiesArr} setView={setView} setPage={setPage}/>
-        <div className="main-content">
-            {display()}
-        </div>
-    </div>
-    </>
+            {view !== "Welcome-Page" && (
+                <>
+                    <Banner view={view} setView={setView} setSearchTerms={setSearchTerms}/>
+                    <div className="below-header">
+                        <NavBar view={view} page={page} communities={communitiesArr} setView={setView} setPage={setPage}/>
+                        <div className="main-content">
+                            {display()}
+                        </div>
+                    </div>
+                </>
+            )}
+            {view === "Welcome-Page" && (
+                <div className="main-content">
+                {display()}
+            </div>
+            )}
+        </>
         )
 }
     
