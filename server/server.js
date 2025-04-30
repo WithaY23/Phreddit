@@ -360,33 +360,58 @@ app.get("/users/username/:displayName", async (req,res) => {
 })
 
 // Try to find user email and password
-app.post("/users/login/:emailAddress/:password", async (req,res) => {
-    try
-    {
-      const emailAddress = req.params["emailAddress"];
-      const password = req.params["password"];
-      const users = await User.find();
-      const user = users.find(async (user) => {
-        await verifyEncryption(emailAddress, user.email)
-      })
-      if(user)
-      {
-        if(await verifyEncryption(password, user.passwordHash)) // Password matched database password associated with email
-        {
-            res.status(200).send(user);
+// app.post("/users/login/:emailAddress/:password", async (req,res) => {
+//     try
+//     {
+//       const emailAddress = req.params["emailAddress"];
+//       const password = req.params["password"];
+//       const users = await User.find();
+//       const user = users.find(async (user) => {
+//         await verifyEncryption(emailAddress, user.email)
+//       })
+//       if(user)
+//       {
+//         if(await verifyEncryption(password, user.passwordHash)) // Password matched database password associated with email
+//         {
+//             res.status(200).send(user);
+//         }
+//         res.status(500).send({error: "Failed to find user"})
+//       }
+//       else
+//       {
+//         res.status(500).send({error: "Failed to find user"})
+//       }
+//     }
+//     catch(err)
+//     {
+//       res.status(500).send({error: "Failed to get user", err})
+//     }
+// })
+
+app.post("/users/login", async (req, res) =>{
+    try {
+        const email = req.body.email;
+        const password = req.body.password;
+
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(400).send({error: "Invalid Email"});
         }
-        res.status(500).send({error: "Failed to find user"})
-      }
-      else
-      {
-        res.status(500).send({error: "Failed to find user"})
-      }
+
+        const password_match = await verifyEncryption(password, user.passwordHash);
+        if(!password_match){
+            return res.status(400).send({error: "Invalid Password"});
+        }
+
+        return res.status(200).send(user); //send user back
     }
-    catch(err)
-    {
-      res.status(500).send({error: "Failed to get user", err})
+    catch(err){
+        console.error("error login", err);
+        return res.status(500).send({ error: "server error" });
     }
-})
+});
+
+
 //start the server
 app.listen(8000, () => {console.log("Server listening on port 8000...");});
 

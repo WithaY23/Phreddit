@@ -10,6 +10,8 @@ const PostSchema = new Schema({
     commentIDs:[{type: Schema.Types.ObjectId, ref: 'Comment'}],
     views:{type: Number, required: true, default: 0},
     voteCount:{type: Number, required: true, default: 0},
+    voteUp:[{type: Schema.Types.ObjectId, ref:'User'}],
+    voteDown:[{type: Schema.Types.ObjectId, ref:'User'}],
     // communityId: {types: Schema.Types.ObjectId, ref: 'Community', required:true} //direct access to community, no look up
 })
 

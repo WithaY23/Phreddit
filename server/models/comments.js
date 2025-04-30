@@ -9,8 +9,10 @@ const CommentSchema = new Schema(
         commentIDs: [{type: Schema.Types.ObjectId, ref:'Comment'}],
         commentedBy: {type: Schema.Types.ObjectId, required: true,  ref: 'User'},
         commentedDate: {type: Date, required:true, default: Date.now},
+        postID:{type: Schema.Types.ObjectId, ref:'Post'},  //Optional: can help delete post/comment
         voteCount:{type:Number, required:true, default: 0},    //COMMON ERROR: Double check if required and if default is 0 or based on status
-        postID:{type: Schema.Types.ObjectId, ref:'Post'}  //Optional: can help delete post/comment
+        voteUp:[{type: Schema.Types.ObjectId, ref:'User'}],
+        voteDown:[{type: Schema.Types.ObjectId, ref:'User'}],
     })
     CommentSchema.virtual('url').get(function(){  // aarrow function done maintain correct this
         return 'comments/' + this._id;
