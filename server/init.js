@@ -14,7 +14,7 @@ const CommentModel = require('./models/comments');
 const LinkFlairModel = require('./models/linkflairs');
 const PostModel = require('./models/posts');
 const UserModel = require('./models/users');
-const {encryptPassword, verifyPassword} = require("./encrpytion")
+const {encrypt, verifyEncryption} = require("./encrpytion")
 
 //command parameter [database, admin email, displayname, password]
 //command: node server/init.js mongodb://127.0.0.1:27017/phreddit email displayname password
@@ -48,7 +48,7 @@ async function initializeDB()
     //order: User/ Linkflair (should probably remove postIDs), Comments, Posts, Communities 
    
     //create admin user object
-    const hashedPassword = await encryptPassword(adminPassword);
+    const hashedPassword = await encrypt(adminPassword);
     const adminUser = new UserModel({
         email: adminEmail,
         displayName: adminName,
@@ -61,7 +61,7 @@ async function initializeDB()
 
     const admin = await adminUser.save(); //save the admin user into 'User' database
 
-    const hash1 = await encryptPassword("bigfeet");
+    const hash1 = await encrypt("bigfeet");
     const user1 = new UserModel({
         email: "bigfeet@gmail.com",
         displayName: "bigfeet",
@@ -74,7 +74,7 @@ async function initializeDB()
 
     const userRef1 = await createUser(user1);
 
-    const hash2 = await encryptPassword("astyanax");
+    const hash2 = await encrypt("astyanax");
     const user2 = new UserModel({
         email: "astyanax@aol.com",
         displayName: "astyanax",
@@ -88,7 +88,7 @@ async function initializeDB()
     const userRef2 = await createUser(user2);
 
 
-    const hash3 = await encryptPassword("rollo");
+    const hash3 = await encrypt("rollo");
     const user3 = new UserModel({
         email: "rollo@outlook.com",
         displayName: "rollo",
