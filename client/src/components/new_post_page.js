@@ -2,6 +2,8 @@ import { useState, useEffect} from "react";
 import today_date from "./today_date.mjs";
 import '../stylesheets/new_post_page.css';
 import { verifyHyperlinks } from "./hyperlink";
+import {userCommunityOrdered} from './time_conversion.mjs';
+
 // props will be used for: view, setView, communities, setCommunities, linkFlairs, setLinkFlairs, posts, changePosts
 import axios from "axios";
 export default function New_Post_Page(props)
@@ -11,6 +13,9 @@ export default function New_Post_Page(props)
     const [communities, setCommunities] = useState([]);
     // const [posts, setPosts] = useState([]); Not used by react components, only JS logic
     const [linkFlairs, setLinkFlairs] = useState([]);
+
+    const username = props.username;
+    
     const fetchData = async () =>
         {
             try{
@@ -300,7 +305,8 @@ function LoadCommunities(props) // props will be used for: communities, set_Comm
     const formatted_Communities = [];
     formatted_Communities.push(<option key={"N/A"} value="N/A">Select a community</option>);
 
-    props.communities.forEach((cmt) => 
+    const communities = userCommunityOrdered(props.communities, username) //NEW CODE
+    communities.forEach((cmt) => 
     {
         formatted_Communities.push(<option value={cmt._id} key={cmt._id}> {cmt.name}</option>);
     });

@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export default function timeConverter(original_Date)
 {
    
@@ -47,4 +49,41 @@ export default function timeConverter(original_Date)
   }
 
   
+}
+
+export async function userCommunityOrdered(communities = "",user)
+{
+  if (communities = "")
+  {
+    communities = (await axios.get("http://127.0.0.1:8000/communities/")).data //get communities
+  }
+
+
+  // const userJoinedCommunities = []
+
+  
+  //check user communities against actual communities, return list with user communities upfront
+  const orderedCommunities = communities.toSorted((cmty1, cmty2) =>
+    {
+      if(cmty1.members.contains(user)) //need to rework database to populate members
+      {
+        if(cmty2.members.contains(user))
+        {
+          return new Date(cmty2.startDate) - new Date(cmty1.startDate)
+        }
+        else
+        {
+          return -1;
+        }
+      }
+      else if(cmty2.members.contains(user))
+      {
+        return 1;
+      }
+      else
+      {
+        return new Date(cmty2.startDate) - new Date(cmty1.startDate)
+      }
+    })
+  return orderedCommunities
 }

@@ -38,7 +38,7 @@
 .counters{
     margin-top:20px;
     display:grid;
-    grid-template-columns: 1fr 1fr 1fr 13fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 11fr;
     grid-template-rows:1fr 1fr;
     height:40px;
 }
@@ -55,6 +55,12 @@
     grid-row:1;
 }
 
+#vote-label{
+    font-size:14px;
+    grid-column:5;
+    grid-row:1;
+}
+
 #view-count{
     font-size:14px;
     grid-column:1;
@@ -66,6 +72,13 @@
     grid-column:3;
     grid-row:2;
 }
+
+#vote-count{
+    font-size:14px;
+    grid-column:5;
+    grid-row:2;
+}
+
 .comment-section{
     font-size:15px;
     border-top: 1px solid black;

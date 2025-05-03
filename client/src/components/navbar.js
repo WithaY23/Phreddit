@@ -6,6 +6,7 @@
 
 import {useState, useEffect} from 'react';
 import axios from 'axios';
+import { userCommunityOrdered } from './time_conversion.mjs';
 import '../stylesheets/navbar.css';
 function HomeButtonContainer(props)
 {
@@ -39,13 +40,13 @@ function Communities(props)
 {
   const view = props.view;
   const page = props.page ? props.page : "";
-  const userID=  props.userID;
+  const username=  props.username;
   const setView = props.setView;
   const setPage = props.setPage;
 
   function CreateCommunityButton() // Make a phreddit color when selected
   {
-    return (userID ?
+    return (username ?
     
     
     ((view === "Create-Community-Page") ? 
@@ -66,33 +67,15 @@ function Communities(props)
 
   function CommmunityList(props)
   {
+    let originalCommunities = props.communities;
     const communities = [];
 
-    const userCreatedCommunities= []// axios get request to a "userID: created communities" route that returns all the communities the user has created, use as a reference when ordering communities
-    //Sort by user's most recent join date
-    props.communities.toSorted((cmty1, cmty2) =>
+    //Sort by user's most recent join date if logged in
+    if(username)
     {
-      if(userCreatedCommunities.includes(cmty1))
-      {
-        if(userCreatedCommunities.includes(cmty2))
-        {
-          return new Date(cmty2.startDate) - new Date(cmty1.startDate)
-        }
-        else
-        {
-          return -1;
-        }
-      }
-      else if(userCreatedCommunities.includes(cmty2))
-      {
-        return 1;
-      }
-      else
-      {
-        return new Date(cmty2.startDate) - new Date(cmty1.startDate)
-      }
+     originalCommunities = userCommunityOrdered(originalCommunities, username);
     }
-    )
+    
     props.communities.forEach(community => 
       {
         //pass a reference to each community
@@ -169,7 +152,8 @@ export default function NavBar(props)
   const [communities, setCommunities] = useState([]);
 
   // NEW CODE
-  const userID = props.userID ? props.userID : "";
+  const username = props.username ? props.username : "";
+
 
 
   useEffect(() =>
@@ -196,6 +180,7 @@ export default function NavBar(props)
         communities={communities}
         setView={setView}
         setPage={setPage}
+        username={username}
       /> {/* Pass down the view through props into communities*/}
     </div>
 

@@ -9,9 +9,9 @@ const PostSchema = new Schema({
     postedDate:{type: Date, default: Date.now},
     commentIDs:[{type: Schema.Types.ObjectId, ref: 'Comment'}],
     views:{type: Number, required: true, default: 0},
-    voteCount:{type: Number, required: true, default: 0},
-    voteUp:[{type: Schema.Types.ObjectId, ref:'User'}],
-    voteDown:[{type: Schema.Types.ObjectId, ref:'User'}],
+    voteUp:[{type: Schema.Types.ObjectId, ref: 'User'}],
+    voteDown:[{type: Schema.Types.ObjectId, ref: 'User'}],
+
     // communityId: {types: Schema.Types.ObjectId, ref: 'Community', required:true} //direct access to community, no look up
 })
 
@@ -27,6 +27,11 @@ PostSchema.virtual('community', {
     foreignField: 'postIDs',      //look in the postIDs array of community model
     justOne: true                 //return community
 });
+
+PostSchema.virtual('voteCount').get(function()
+{
+    return this.voteUp.length - this.voteDown.length;
+})
 //to allow virtual URL to be also sent back in JSON
 PostSchema.set('toJSON', {virtuals: true});
 
