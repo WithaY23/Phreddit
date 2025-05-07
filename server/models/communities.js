@@ -16,7 +16,7 @@ const CommunitySchema = new Schema(
 
 //virtual membercount
 CommunitySchema.virtual('memberCount').get(function(){
-    return this.members.length;
+    return this.members?.length || 0;
 })
 
 //virtual URL

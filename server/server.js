@@ -18,18 +18,27 @@ const {encrypt, verifyEncryption} = require("./encrpytion")
 const app = express();
 const port = 8000;
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true                    //require authentication
+}));
 // {timestamps: true}, could use this for schemas
 // MUST STORE USER SESSION IN DB
 app.use(
     session({
-      secret: "supersecret difficult to guess string",
-      cookie: {},
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/bcrypt_test'})
+        secret: "supersecret difficult to guess string",
+        resave: false,
+        saveUninitialized: false,
+        //store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/bcrypt_test'})
+        store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/phreddit'}),
+        cookie: {
+            httpOnly:true,
+            sameSite: 'lax',       //allows cross orgin get requests
+            //secure: true,
+            maxAge: 1000*60*60*24, //1 day
+        }
     })
-  );
+);
 
 
 
@@ -49,6 +58,15 @@ db.on('connected', function(){
 app.use(express.json()); //allow server side to receive data sent from client side in json
 
 //------------------Defining Routes------------------------
+
+app.get("/users/session", (req, res) => {   //route for session
+    if(req.session.user){    //logged in
+        res.status(200).json(req.session.user);  //send back current user
+    }
+    else{                   //not logged in
+        res.status(401).json({error: "Not logged in"})
+    }
+});
 
 app.get("/", function (req, res) {
     console.log("Get request received at '/'");
@@ -521,11 +539,10 @@ app.get("/users/username/:displayName", async (req,res) => {
 // })
 
 app.post("/users/login", async (req, res) =>{
+    const email = req.body.email;
+    const password = req.body.password;
     try {
-        const email = req.body.email;
-        const password = req.body.password;
-
-        const user = await User.findOne({email});
+        const user = await User.findOne({email}); //get the user
         if(!user){
             return res.status(400).send({error: "Invalid Email"});
         }
@@ -535,13 +552,32 @@ app.post("/users/login", async (req, res) =>{
             return res.status(400).send({error: "Invalid Password"});
         }
 
-        return res.status(200).send(user); //send user back
+        //add session
+        req.session.user = {
+            id: user._id,
+            displayName: user.displayName,
+            isAdmin: user.isAdmin,
+            email: user.email,
+        }
+
+        return res.status(200).send(req.session.user); //send user back
     }
     catch(err){
         console.error("error login", err);
         return res.status(500).send({ error: "server error" });
     }
 });
+
+app.post("/users/logout", (req,res) => {
+    req.session.destroy(error => {        //end session
+        if(error){
+            return res.status(500).send({error:"fail to logout"});
+        }
+        
+        res.clearCookie("connect.sid");    //clear cookie
+        return res.status(200).send({success: "logged out success"})
+    });
+})
 
 
 //start the server

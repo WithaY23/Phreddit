@@ -132,7 +132,7 @@ function Community(props) //format of each community, display phreddit color if 
             style={{color: "blue", textDecoration: "underline"}}
             onClick={async () => {
               try{
-                const res = await axios.get(`http://127.0.0.1:8000/community/${props.id}`);
+                const res = await axios.get(`http://localhost:8000/community/${props.id}`);
                 const updatedCommunity = res.data;
                 props.setView("Community-Page");
                 props.setPage(updatedCommunity); //use fresh version with most recent postIDs
@@ -158,7 +158,7 @@ export default function NavBar(props)
 
   useEffect(() =>
     {
-      axios.get('http://127.0.0.1:8000/communities/').then((res) =>
+      axios.get('http://localhost:8000/communities/').then((res) =>
         {
           setCommunities(res.data)
         }).catch((err) =>{

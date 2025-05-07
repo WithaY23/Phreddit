@@ -70,7 +70,7 @@ export default function Create_Community(props){
         if(!check_valid()) return;
         //is valid, create a community
         
-        axios.get("http://127.0.0.1:8000/communities")
+        axios.get("http://localhost:8000/communities")
             .then(res =>{
                 const latest_communities = res.data;
                 setCommunities(latest_communities); //update front end with newest data fetched before adding 
@@ -85,7 +85,7 @@ export default function Create_Community(props){
                     memberCount: 1,
                 };
 
-                return axios.post("http://127.0.0.1:8000/communities", new_community);
+                return axios.post("http://localhost:8000/communities", new_community);
             })
             .then(res => {       //wait for the response
                 setCommunities(prev => [...prev, res.data]); //update frontend with newest data including the newest community added

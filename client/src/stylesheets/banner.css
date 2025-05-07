@@ -24,6 +24,34 @@
     cursor: pointer;
 }
 
+#button-profile { 
+    border-radius: 20px;
+    height: 40px;
+    border: none;
+    background-color: #e6ecef;
+    padding: 0px 10px;
+    margin-right: 10px;
+}
+
+#button-profile:hover {
+    background-color: #FF4500;
+    cursor: pointer;
+}
+
+#button-logout { 
+    border-radius: 20px;
+    height: 40px;
+    border: none;
+    background-color: #e6ecef;
+    padding: 0px 10px;
+    margin-right: 10px;
+}
+
+#button-logout:hover {
+    background-color: #FF4500;
+    cursor: pointer;
+}
+
 .header {
     font-size: 2em;
     font-weight: bold;
@@ -56,3 +84,4 @@
     outline: none;
     appearance: none;
   }
+

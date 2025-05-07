@@ -55,7 +55,7 @@ export async function userCommunityOrdered(communities = "",user)
 {
   if (communities = "")
   {
-    communities = (await axios.get("http://127.0.0.1:8000/communities/")).data //get communities
+    communities = (await axios.get("http://localhost:8000/communities/")).data //get communities
   }
 
 

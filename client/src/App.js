@@ -4,6 +4,8 @@ import './stylesheets/App.css';
 import Phreddit from './components/phreddit.js'
 import WelcomePage from './components/WelcomePage.js';
 import Main_Content from './components/main_content.js';
+import axios from 'axios';
+axios.defaults.withCredentials = true;
 
 function App() {
   return (

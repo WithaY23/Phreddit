@@ -54,10 +54,10 @@ function PostList(props){
         async function fetchData(){
             try {
                 const [p, c, cm, lf] = await Promise.all([
-                    axios.get("http://127.0.0.1:8000/posts"),
-                    axios.get("http://127.0.0.1:8000/comments"),
-                    axios.get("http://127.0.0.1:8000/communities"),
-                    axios.get("http://127.0.0.1:8000/linkflairs"),
+                    axios.get("http://localhost:8000/posts"),
+                    axios.get("http://localhost:8000/comments"),
+                    axios.get("http://localhost:8000/communities"),
+                    axios.get("http://localhost:8000/linkflairs"),
                 ]);
 
                 setPosts(p.data);

@@ -63,8 +63,8 @@ export default function New_Comment_Page(props)
     {
         try
         {
-            const comments = (await axios.get('http://127.0.0.1:8000/comments')).data;
-            const posts = (await axios.get('http://127.0.0.1:8000/posts')).data;
+            const comments = (await axios.get('http://localhost:8000/comments')).data;
+            const posts = (await axios.get('http://localhost:8000/posts')).data;
             
             const comment = 
             {
@@ -80,7 +80,7 @@ export default function New_Comment_Page(props)
     
             try
             {
-                const newComment = (await axios.post("http://127.0.0.1:8000/comments", comment)).data.comment;
+                const newComment = (await axios.post("http://localhost:8000/comments", comment)).data.comment;
                 if(replySubject === "Create-Comment-Page-Post") //it is a post comment
                 {
                     //update the post object to include the comment
@@ -99,7 +99,7 @@ export default function New_Comment_Page(props)
                     // props.changePosts(shallowPostArr);
                     try
                     {
-                        const updateValue = (await axios.post("http://127.0.0.1:8000/posts/update-posts-commentIDs/" + post._id, newComment)).data;
+                        const updateValue = (await axios.post("http://localhost:8000/posts/update-posts-commentIDs/" + post._id, newComment)).data;
                         // load new view
                         console.log(updateValue.success);
                         const updatedPost = updateValue.post;
@@ -129,7 +129,7 @@ export default function New_Comment_Page(props)
                     // props.changeComments(shallowCommentArray);
                     try
                     {
-                        await axios.post("http://127.0.0.1:8000/comments/update-comments-commentIDs/" + cmt._id, newComment)
+                        await axios.post("http://localhost:8000/comments/update-comments-commentIDs/" + cmt._id, newComment)
                     }
                     catch(err)
                     {
