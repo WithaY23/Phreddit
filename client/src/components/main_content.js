@@ -8,6 +8,7 @@ import PostPage from './post_page.js';
 import NewCommentPage from './new_comment_page.js';
 import Banner from './banner.js';
 import NewPostPage from './new_post_page.js';
+import ProfilePage from './profile_page.js';
 
 import WelcomePage from './WelcomePage.js';
 import LoginPage from './login_page.js'
@@ -22,6 +23,7 @@ export default function Main_Content()
     const [linkFlairsArr,setLinkFlairsArr] = useState([]);
     const [postsArr,setPostsArr] = useState([]);
     const [commentsArr,setCommentsArr] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
 
     // Display the view that is presented and, if applicable, the relevant instance of page
     // Default
@@ -33,17 +35,35 @@ export default function Main_Content()
     const [xposts, setXposts] = useState("");
     //create a sort type for new old active: default newest
     const [sortType, setSortType] = useState("newest");
+    //load before doing anything
+    const [loading, setLoading] = useState(true);
 
     const noBannerPages = ["Welcome-Page", "Login-Page"];
+
+    useEffect(() => {
+        axios.get("http://localhost:8000/users/session", { withCredentials: true })
+            .then((res) => {
+                console.log("Session found:", res.data);
+                setCurrentUser(res.data);
+                setView("Home-Page");  // or "Profile-Page" if you prefer
+            })
+            .catch(() => {
+                console.log("No session found---");
+                setView("Welcome-Page");
+            })
+            .finally(() => {
+                setLoading(false); //finish loading
+            });
+    }, []);
 
     useEffect(() => 
     {
         const get_data = async () =>{
             try {
-                const comms = await axios.get("http://127.0.0.1:8000/communities/");
-                const lFs = await axios.get("http://127.0.0.1:8000/linkflairs/");
-                const posts = await axios.get("http://127.0.0.1:8000/posts/");
-                const comments = await axios.get("http://127.0.0.1:8000/comments/");
+                const comms = await axios.get("http://localhost:8000/communities/");
+                const lFs = await axios.get("http://localhost:8000/linkflairs/");
+                const posts = await axios.get("http://localhost:8000/posts/");
+                const comments = await axios.get("http://localhost:8000/comments/");
 
                 // Update each state variable with the gathered data
                 setCommunitiesArr(comms.data); //
@@ -106,6 +126,7 @@ export default function Main_Content()
                 ); 
             case "Create-Post-Page":
                 return <NewPostPage 
+                    currentUser={currentUser}
                     setView={setView} 
                     view = {view}
                     communities={communitiesArr} 
@@ -186,11 +207,15 @@ export default function Main_Content()
                 );
             case "Welcome-Page":
                 return (
-                    <WelcomePage view={view} setView={setView} ></WelcomePage>
+                    <WelcomePage view={view} setView={setView} />
                 )
             case "Login-Page":
                 return(
-                    <LoginPage view={view} setView={setView}></LoginPage>
+                    <LoginPage view={view} setView={setView} setCurrentUser={setCurrentUser}/>
+                )
+            case "Profile-Page":
+                return(
+                    <ProfilePage view={view} setView={setView} currentUser={currentUser}/>
                 )
             default:
                 alert("AHHHHH");
@@ -199,11 +224,18 @@ export default function Main_Content()
         }
     }
 
+    if(loading){
+        return (
+            <div>loading...</div>
+        )
+    }
+
     return (
         <>
             {!noBannerPages.includes(view) && (
                 <>
-                    <Banner view={view} setView={setView} setSearchTerms={setSearchTerms}/>
+                    <Banner view={view} setView={setView} setSearchTerms={setSearchTerms} currentUser={currentUser} 
+                        setCurrentUser={setCurrentUser}/>
                     <div className="below-header">
                         <NavBar view={view} page={page} communities={communitiesArr} setView={setView} setPage={setPage}/>
                         <div className="main-content">

@@ -27,6 +27,7 @@ const mongoDB = userArgs[0];
 const adminEmail = userArgs[1];
 const adminName = userArgs[2];
 const adminPassword = userArgs[3];
+const reset = userArgs.includes("-reset"); //for resetting data only
 
 if(!mongoDB || !adminEmail || !adminName || !adminPassword){
     console.error('Use Format: node server/init.js <mongoDB> <adminEmail> <adminName> <adminPassword>')
@@ -44,6 +45,17 @@ async function initializeDB()
     mongoose.connect(mongoDB);
     const db = mongoose.connection;
     db.on('error', console.error.bind(console, "MongoDB connection error"));
+
+    if(reset){
+        console.log("reset data")
+        //delete previous data
+        await CommunityModel.deleteMany({});
+        await CommentModel.deleteMany({});
+        await PostModel.deleteMany({});
+        await LinkFlairModel.deleteMany({});
+        await UserModel.deleteMany({}); 
+    }
+    
 
     //order: User/ Linkflair (should probably remove postIDs), Comments, Posts, Communities 
    
@@ -243,7 +255,7 @@ async function initializeDB()
         description: 'A practical application of the principles of justice.',
         postIDs: [postRef1],
         startDate: new Date('August 10, 2014 04:18:00'),
-        members: [user3, user2,], // Modified data
+        members: [userRef3, userRef2,], // Modified data
         memberCount: 2,
     };
     const community2 = { // community object 2

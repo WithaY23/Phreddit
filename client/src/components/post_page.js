@@ -139,14 +139,14 @@ async function changeVote(newVote, setCurrentVote, votername, content, contentTy
     {
         if (contentType === "Post")
         {
-            const post = await axios.post(`http://127.0.0.1.8000/posts/updatePostVote/${content}/${votername}/${newVote}`);
+            const post = await axios.post(`http://localhost.8000/posts/updatePostVote/${content}/${votername}/${newVote}`);
             setCurrentVote(newVote);
             setVoteCount(post.voteCount);
         }
         else if(contentType === "Comment")
         {
-            await axios.post(`http://127.0.0.1.8000/posts/updateCommentVote/${content}/${votername}/${newVote}`);
-            const comment = (await axios.get(`http://127.0.0.1.8000/comments/${content._id}`)).data
+            await axios.post(`http://localhost.8000/posts/updateCommentVote/${content}/${votername}/${newVote}`);
+            const comment = (await axios.get(`http://localhost.8000/comments/${content._id}`)).data
             setCurrentVote(newVote);
             setVoteCount(comment.voteCount);
         }
@@ -191,19 +191,19 @@ export default function Post_Page(props)
         const getDBData = async () =>{
             try
             {
-                // const cmty = await axios.get("http://127.0.0.1:8000/communities"); //utilize virtual field to get community
-                const pst = (await axios.get("http://127.0.0.1:8000/posts/" + postID)).data;
+                // const cmty = await axios.get("http://localhost:8000/communities"); //utilize virtual field to get community
+                const pst = (await axios.get("http://localhost:8000/posts/" + postID)).data;
                 const cmty = pst.community;
                 if(pst.hasOwnProperty('linkFlairID'))
                 {
-                    const lf = (await axios.get("http://127.0.0.1:8000/linkflairs/" + pst.linkFlairID._id)).data; //should only get one linkflair, add to server.js
+                    const lf = (await axios.get("http://localhost:8000/linkflairs/" + pst.linkFlairID._id)).data; //should only get one linkflair, add to server.js
                     setLinkflair(lf);
                 }
                 else
                 {
                     setLinkflair("")
                 }
-                const com =  (await axios.get("http://127.0.0.1:8000/comments/")).data
+                const com =  (await axios.get("http://localhost:8000/comments/")).data
                 setPost(pst);
                 setCommunity(cmty);
                 setComments(com);

@@ -1,15 +1,30 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import axios from 'axios';
 
 import '../stylesheets/login_page.css';
 
 export default function LoginPage(props) {
     const setView = props.setView;
+    const setCurrentUser = props.setCurrentUser;
 
     const [email_entered, setEmail] = useState("");
     const [password_entered, setPassword] = useState("");
     const [feedback, setFeedback] = useState("");
-    const [currentUser, setCurrentUser] = useState(null);
+    
+
+    //check for any session when page loads
+    useEffect(() => {
+        axios.get("http://localhost:8000/users/session", {withCredentials: true})  //sends the session cookie
+        .then(res =>{
+            console.log("Session found:", res.data);
+            setCurrentUser(res.data);
+            console.log("email", res.data.displayName);
+            setView("Home-Page");
+        })
+        .catch(() => {
+            console.log("no session found");
+        });
+    },[setCurrentUser, setView]); //run once on start
 
     async function LoginPressed(){
         if(!email_entered || !password_entered){
@@ -18,10 +33,11 @@ export default function LoginPage(props) {
         }
 
         try{
-            const response = await axios.post("http://127.0.0.1:8000/users/login", { //send user input to server for authen
+            const response = await axios.post("http://localhost:8000/users/login", { //send user input to server for authen
                 email: email_entered,  
                 password: password_entered
-            });
+            }, {withCredentials:true});
+
             console.log("Login successful", response.data);
             setCurrentUser(response.data);
             setView("Home-Page");

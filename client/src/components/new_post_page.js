@@ -19,9 +19,9 @@ export default function New_Post_Page(props)
     const fetchData = async () =>
         {
             try{
-            const c = await axios.get('http://127.0.0.1:8000/communities/')
-            // const p = await axios.get('http://127.0.0.1:8000/posts/')
-            const lf = await axios.get('http://127.0.0.1:8000/linkflairs/')
+            const c = await axios.get('http://localhost:8000/communities/')
+            // const p = await axios.get('http://localhost:8000/posts/')
+            const lf = await axios.get('http://localhost:8000/linkflairs/')
             setCommunities(c.data)
             // setPosts(p.data)
             setLinkFlairs(lf.data)
@@ -106,9 +106,9 @@ export default function New_Post_Page(props)
         // await fetchData(); //are the communities and linkflairs up to date? likely not
         try
         {
-            const p = await axios.get('http://127.0.0.1:8000/posts/');
-            const c = await axios.get('http://127.0.0.1:8000/communities/')
-            const lf = await axios.get('http://127.0.0.1:8000/linkflairs/')
+            const p = await axios.get('http://localhost:8000/posts/');
+            const c = await axios.get('http://localhost:8000/communities/')
+            const lf = await axios.get('http://localhost:8000/linkflairs/')
             
             const posts = p.data;
             const communities = c.data;
@@ -129,8 +129,8 @@ export default function New_Post_Page(props)
                 // changePosts(shallowPostArr);
                 console.log("POOOOSSSTTT", post);
                 console.log("Communitttyyy", cmnty);
-                // axios.post('http://127.0.0.1:8000/posts/', post).then( 
-                // (response) => { console.log(response.data.success); return axios.post('http://127.0.0.1:8000/communities/update-community/' + cmnty._id, response.data.post)}).then( //somehow update community instance
+                // axios.post('http://localhost:8000/posts/', post).then( 
+                // (response) => { console.log(response.data.success); return axios.post('http://localhost:8000/communities/update-community/' + cmnty._id, response.data.post)}).then( //somehow update community instance
                 //     (response) =>{console.log(response.data.success); console.log("Finished both community and post update and post respectively")})
                 //     .catch((err) =>
                 //     {
@@ -139,11 +139,11 @@ export default function New_Post_Page(props)
                 // )
                 try
                 {
-                    const newPost = await axios.post('http://127.0.0.1:8000/posts/', post);
+                    const newPost = await axios.post('http://localhost:8000/posts/', post);
                     console.log("NEW POST");
                     console.log(newPost.data.success);
                     console.log(newPost.data.post);
-                    const updatedCommunity = await axios.post('http://127.0.0.1:8000/communities/update-community-postIDs/' + cmnty._id, newPost.data.post)
+                    const updatedCommunity = await axios.post('http://localhost:8000/communities/update-community-postIDs/' + cmnty._id, newPost.data.post)
                     console.log( updatedCommunity.data.success);
                 }
                 catch(err)
@@ -200,7 +200,7 @@ export default function New_Post_Page(props)
                 }
                 try
                 {
-                    const linkFlairID = (await axios.post("http://127.0.0.1:8000/linkflairs/", linkFlair)).data;
+                    const linkFlairID = (await axios.post("http://localhost:8000/linkflairs/", linkFlair)).data;
                     post.linkFlairID = linkFlairID.linkflair;
                     await push_data(post);
                 }
@@ -215,7 +215,7 @@ export default function New_Post_Page(props)
             {
                 try
                 {
-                    const linkflairReference = (await axios.get("http://127.0.0.1:8000/linkflairs/" + linkFlair)).data;
+                    const linkflairReference = (await axios.get("http://localhost:8000/linkflairs/" + linkFlair)).data;
                     const post = {
                         postID: "p" + (posts.length + 1),
                         title: postTitle,
@@ -302,6 +302,7 @@ Needed (get): communities, linkFlairs, posts
 
 function LoadCommunities(props) // props will be used for: communities, set_Community, community
 {
+    const username = props.currentUser?.displayName || "";
     const formatted_Communities = [];
     formatted_Communities.push(<option key={"N/A"} value="N/A">Select a community</option>);
 
