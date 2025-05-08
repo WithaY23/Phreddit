@@ -141,7 +141,7 @@ app.get("/community/:communityID", async (req,res) =>{
 })
 app.get("/comments", async (req, res) => {
     try{
-        const comments = await Comment.find();
+        const comments = await Comment.find().populate("commentedBy");
         res.status(200).json(comments);
     }
     catch(err)
@@ -289,7 +289,7 @@ app.get('/posts/:postID', async (req,res) =>{
     try
     {
         const postID = req.params['postID'];
-        const posts = await Post.find({_id: postID}).populate('linkFlairID').populate('community');
+        const posts = await Post.find({_id: postID}).populate('linkFlairID').populate('community').populate('postedBy');
         if (posts === undefined || posts.length === 0)
         {
             throw new Error("Did not retrieve post");
@@ -579,17 +579,6 @@ app.post("/users/logout", (req,res) => {
     });
 })
 
-app.get("/username/loggedin", (req,res) =>
-{
-    if(req.session.username)
-    {
-        res.status(200).send({loggedin: true, username: req.session.username});
-    }
-    else
-    {
-        res.status(200).send({loggedin: false, username: undefined})
-    }
-})
 
 //start the server
 app.listen(8000, () => {console.log("Server listening on port 8000...");});

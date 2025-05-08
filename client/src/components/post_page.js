@@ -37,7 +37,7 @@ function CommentSection(props) // props will be used for: comments, page
         // Store important aspects of the comment in relevant variables
         console.log(props.comment);
         const username=  props.username;
-        const commentName = props.comment.commentedBy;
+        const commentName = props.comment.commentedBy.displayName;
         const timestamp= timeConverter(props.comment.commentedDate);
         const content = props.comment.content;
         const votes = props.comment.voteCount
@@ -262,7 +262,7 @@ export default function Post_Page(props)
 
             <span id="post-timestamp">{timeConverter(post.postedDate).toLocaleString()}</span>
 
-            <div id="post-username">{post.postedBy}</div>
+            <div id="post-username">{post.postedBy.displayName}</div>
 
             <h2 id="post-title">{post.title}</h2>
 
