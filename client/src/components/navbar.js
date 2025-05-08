@@ -40,6 +40,7 @@ function Communities(props)
 {
   const view = props.view;
   const page = props.page ? props.page : "";
+  const loggedin = props.loggedin;
   const username=  props.username;
   const setView = props.setView;
   const setPage = props.setPage;
@@ -71,8 +72,9 @@ function Communities(props)
     const communities = [];
 
     //Sort by user's most recent join date if logged in
-    if(username)
+    if(loggedin)
     {
+      //make an axios request to get the user data
      originalCommunities = userCommunityOrdered(originalCommunities, username);
     }
     
@@ -150,9 +152,10 @@ export default function NavBar(props)
   const view = props.view;
   const page = props.page ? props.page : "";
   const [communities, setCommunities] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // NEW CODE
-  const username = props.username ? props.username : "";
+  let loggedin = false, username = ""; 
 
 
 
@@ -161,6 +164,7 @@ export default function NavBar(props)
       axios.get('http://localhost:8000/communities/').then((res) =>
         {
           setCommunities(res.data)
+          setLoading(true);
         }).catch((err) =>{
           console.log("Error in navbar communities: ", err)
         })
@@ -172,16 +176,26 @@ export default function NavBar(props)
   const setPage = props.setPage;
 
     return(
+
     <div className="nav-sidebar">
+      {loading ? 
+      <>
       <HomeButtonContainer view={view} setView={setView}/>  
       <Communities 
         view={view} 
         page={page} 
-        communities={communities}
+        communities={communities} 
         setView={setView}
         setPage={setPage}
         username={username}
-      /> {/* Pass down the view through props into communities*/}
+        loggedin={loggedin}
+      />
+      </>
+      :
+      <p>Loading</p>}
+
+      
+      
     </div>
 
     )

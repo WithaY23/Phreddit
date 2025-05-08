@@ -77,7 +77,7 @@ app.get("/", function (req, res) {
 app.get("/communities", async (req, res) => {
     try 
     {
-        const communities = await Community.find();
+        const communities = await Community.find().populate("members");
         console.log(communities)
         res.status(200).json(communities);
     } 
@@ -579,6 +579,17 @@ app.post("/users/logout", (req,res) => {
     });
 })
 
+app.get("/username/loggedin", (req,res) =>
+{
+    if(req.session.username)
+    {
+        res.status(200).send({loggedin: true, username: req.session.username});
+    }
+    else
+    {
+        res.status(200).send({loggedin: false, username: undefined})
+    }
+})
 
 //start the server
 app.listen(8000, () => {console.log("Server listening on port 8000...");});
