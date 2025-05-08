@@ -13,7 +13,7 @@ import axios from 'axios';
 export default function New_Comment_Page(props) 
 {
     const [textbox,set_textbox] = useState("");
-    const [username,set_username] = useState("");
+    // const [username,set_username] = useState("");
 
     const replySubject = props.view;
     const ID = props.page;
@@ -42,10 +42,10 @@ export default function New_Comment_Page(props)
                 })
             }
         }
-        if(username === "")
-        {
-            err.push("enter a username");
-        }
+        // if(username === "")
+        // {
+        //     err.push("enter a username");
+        // }
         if(err.length !== 0)
         {
             alert(`Error from the following actions: ${err.join(", ")}`)
@@ -65,7 +65,10 @@ export default function New_Comment_Page(props)
         {
             const comments = (await axios.get('http://localhost:8000/comments')).data;
             const posts = (await axios.get('http://localhost:8000/posts')).data;
+            let data = (await axios.get('http://localhost:8000/username/loggedin')).data
+            const {loggedin, username} = data;
             
+
             const comment = 
             {
                 commentID: "comment" + (comments.length + 1),
@@ -74,13 +77,10 @@ export default function New_Comment_Page(props)
                 commentedBy: username,
                 commentedDate: today_date(new Date()),
             }
-            // const otherCommentArr = [...comments];
-            // otherCommentArr.push(comment);
-            // props.changeComments(otherCommentArr);  
     
             try
             {
-                const newComment = (await axios.post("http://localhost:8000/comments", comment)).data.comment;
+                const newComment = (await axios.post("http://127.0.0.1:8000/comments", comment)).data.comment;
                 if(replySubject === "Create-Comment-Page-Post") //it is a post comment
                 {
                     //update the post object to include the comment
@@ -224,7 +224,11 @@ export default function New_Comment_Page(props)
         }
     }
     }
-
+{/*
+    <span id="new-comment-username-container">
+     <label htmlFor="new-comment-username" className="new-requirement">Username: </label>
+<input type="text" id="new-comment-username" name="new-comment-username" value={username} onChange={(e) => set_username(e.target.value)}/>
+</span> */}
 return (
     <div className="under-main-content-header" id="posts_container">
         <div className="new-comment-container">
@@ -236,10 +240,6 @@ return (
                 <textarea id="new-comment-content" name="new-comment-content" rows="2" maxLength="500" placeholder="Maximum Of 500 Characters " value={textbox} onChange={e => set_textbox(e.target.value)}></textarea>
             </div>
             <span id="new-comment-submit-container">
-                <span id="new-comment-username-container">
-                    <label htmlFor="new-comment-username" className="new-requirement">Username: </label>
-                    <input type="text" id="new-comment-username" name="new-comment-username" value={username} onChange={(e) => set_username(e.target.value)}/>
-                </span>
                     <button id="new-comment-submit-button" className="button" onClick={validate_input}>Submit Comment</button>
             </span>
         </div>

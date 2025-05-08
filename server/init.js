@@ -157,7 +157,7 @@ async function initializeDB()
         commentID: 'comment7',
         content: 'Generic poster slogan #42',
         commentIDs: [],
-        commentedBy: userRef1,
+        commentedBy: userRef1._id,
         commentedDate: new Date('September 10, 2024 09:43:00'),
     };
     let commentRef7 = await createComment(comment7);
@@ -175,7 +175,7 @@ async function initializeDB()
         commentID: 'comment5',
         content: 'The same thing happened to me. I guest this channel does still show real history.',
         commentIDs: [],
-        commentedBy: userRef1,
+        commentedBy: userRef1._id,
         commentedDate: new Date('September 09, 2024 017:03:00'),
     }
     let commentRef5 = await createComment(comment5);
@@ -193,7 +193,7 @@ async function initializeDB()
         commentID: 'comment3',
         content: 'My brother in Christ, are you ok? Also, YTJ.',
         commentIDs: [],
-        commentedBy: userRef3,
+        commentedBy: userRef3._id,
         commentedDate: new Date('August 23, 2024 09:31:00'),
     };
     let commentRef3 = await createComment(comment3);
@@ -202,7 +202,7 @@ async function initializeDB()
         commentID: 'comment2',
         content: 'Obvious rage bait, but if not, then you are absolutely the jerk in this situation. Please delete your Tron vehicle and leave is in peace.  YTJ.',
         commentIDs: [],
-        commentedBy: userRef2,
+        commentedBy: userRef2._id,
         commentedDate: new Date('August 23, 2024 10:57:00'),
     };
     let commentRef2 = await createComment(comment2);
@@ -224,10 +224,10 @@ async function initializeDB()
         postID: 'p1',
         title: 'AITJ: I parked my cybertruck in the handicapped spot to protect it from bitter, jealous losers.',
         content: 'Recently I went to the store in my brand new Tesla cybertruck. I know there are lots of haters out there, so I wanted to make sure my truck was protected. So I parked it so it overlapped with two of those extra-wide handicapped spots.  When I came out of the store with my beef jerky some Karen in a wheelchair was screaming at me.  So tell me prhreddit, was I the jerk?',
-        linkFlairID: linkFlairRef1,
+        linkFlairID: linkFlairRef1._id,
         postedBy: userRef1, // Modifed data
         postedDate: new Date('August 23, 2024 01:19:00'),
-        commentIDs: [commentRef2], // Modified data
+        commentIDs: [commentRef2._id], // Modified data
         views: 14,
     };
     const post2 = { // post 2
@@ -237,7 +237,7 @@ async function initializeDB()
         linkFlairID: linkFlairRef3,
         postedBy: userRef2, // Modified data
         postedDate: new Date('September 9, 2024 14:24:00'),
-        commentIDs: [commentRef5], // Modified data
+        commentIDs: [commentRef5._id], // Modified data
         views: 1023,
     };
     let postRef1 = await createPost(post1);
@@ -253,9 +253,9 @@ async function initializeDB()
         communityID: 'community1',
         name: 'Am I the Jerk?',
         description: 'A practical application of the principles of justice.',
-        postIDs: [postRef1],
+        postIDs: [postRef1._id],
         startDate: new Date('August 10, 2014 04:18:00'),
-        members: [userRef3, userRef2,], // Modified data
+        members: [userRef3._id, userRef2._id], // Modified data
         memberCount: 2,
     };
     const community2 = { // community object 2
@@ -264,7 +264,7 @@ async function initializeDB()
         description: 'A fantastical reimagining of our past and present.',
         postIDs: [postRef2],
         startDate: new Date('May 4, 2017 08:32:00'),
-        members: [ userRef2, userRef1], // Modified data 
+        members: [ userRef2._id, userRef1._id], // Modified data 
         memberCount: 2,
     };
     let communityRef1 = await createCommunity(community1);

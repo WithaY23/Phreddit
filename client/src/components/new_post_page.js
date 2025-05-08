@@ -44,7 +44,7 @@ export default function New_Post_Page(props)
     const [postTitle,set_Post_Title] = useState("");
     const [linkFlair, set_Link_Flair] = useState("N/A");
     const [postTextbox, set_Post_Textbox] = useState("");
-    const [usernameTextbox, set_Username_Textbox] = useState("");
+    // const [usernameTextbox, set_Username_Textbox] = useState("");
     const [linkFlairTextbox, set_Link_Flair_Textbox] = useState(""); // Only loaded when user chooses to create new linkflair
 
     function validate_input()
@@ -85,10 +85,10 @@ export default function New_Post_Page(props)
                 })
             }
         }
-        if(usernameTextbox === "")
-        {
-            err.push("enter a username");
-        }        
+        // if(usernameTextbox === "")
+        // {
+        //     err.push("enter a username");
+        // }        
         if(err.length !== 0)
         {
             alert(`Error from the following actions: ${err.join(", ")}`)
@@ -159,7 +159,7 @@ export default function New_Post_Page(props)
                 postID: "p" + (posts.length + 1),
                 title: postTitle,
                 content: postTextbox,
-                postedBy: usernameTextbox,
+                postedBy: username, 
                 postedDate: today_date(),
                 commentIDs: [],
                 views: 0
@@ -193,7 +193,7 @@ export default function New_Post_Page(props)
                     title: postTitle,
                     content: postTextbox,
                     // linkFlairID: "lf" + (linkFlairs.length + 1),
-                    postedBy: usernameTextbox,
+                    postedBy: username,
                     postedDate: today_date(),
                     commentIDs: [],
                     views: 0
@@ -221,7 +221,7 @@ export default function New_Post_Page(props)
                         title: postTitle,
                         content: postTextbox,
                         linkFlairID: linkflairReference,
-                        postedBy: usernameTextbox,
+                        postedBy: username,
                         postedDate: today_date(),
                         commentIDs: [],
                         views: 0
@@ -284,10 +284,10 @@ Needed (get): communities, linkFlairs, posts
                     <PostContentTextBox updateText={set_Post_Textbox}/>
                 </div>
                 <span id="new-post-submit-container">
-                    <span id="new-post-username-container">
+                    {/* <span id="new-post-username-container">
                         <label htmlFor="new-post-username" className="new-requirement">Username: </label>
                         <UsernameTextbox updateText={set_Username_Textbox} />
-                    </span>
+                    </span> */}
                     <button id="new-post-submit-button" className="button" onClick={validate_input}>Submit Post</button>
                 </span>
             </div>
@@ -366,11 +366,11 @@ function PostContentTextBox(props)
         onChange={(e)=> props.updateText(e.target.value)}></textarea>
     )
 }
-function UsernameTextbox(props)
-{
-    return(
-        <input type="text" id="new-post-username" 
-        name="new-post-username" 
-        onChange={(e)=> props.updateText(e.target.value)}/>
-    )
-}
+// function UsernameTextbox(props)
+// {
+//     return(
+//         <input type="text" id="new-post-username" 
+//         name="new-post-username" 
+//         onChange={(e)=> props.updateText(e.target.value)}/>
+//     )
+// }

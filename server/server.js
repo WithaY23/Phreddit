@@ -77,7 +77,7 @@ app.get("/", function (req, res) {
 app.get("/communities", async (req, res) => {
     try 
     {
-        const communities = await Community.find();
+        const communities = await Community.find().populate("members");
         console.log(communities)
         res.status(200).json(communities);
     } 
@@ -141,7 +141,7 @@ app.get("/community/:communityID", async (req,res) =>{
 })
 app.get("/comments", async (req, res) => {
     try{
-        const comments = await Comment.find();
+        const comments = await Comment.find().populate("commentedBy");
         res.status(200).json(comments);
     }
     catch(err)
@@ -289,7 +289,7 @@ app.get('/posts/:postID', async (req,res) =>{
     try
     {
         const postID = req.params['postID'];
-        const posts = await Post.find({_id: postID}).populate('linkFlairID').populate('community');
+        const posts = await Post.find({_id: postID}).populate('linkFlairID').populate('community').populate('postedBy');
         if (posts === undefined || posts.length === 0)
         {
             throw new Error("Did not retrieve post");
