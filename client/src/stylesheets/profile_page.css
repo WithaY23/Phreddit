@@ -21,3 +21,48 @@
 .value {
     color: #be0000;
 }
+
+.section-btn{
+    border: none;
+    padding: 0px 10px;
+    background-color: #eaeaea;
+    height: 40px;
+    margin-right: 10px;
+  }
+.section-btn:hover{
+    cursor: pointer;
+    background-color: #e6ecef;
+}
+.section-btn.active{
+    background-color: #FF4500; /* or any highlight color you like */
+}
+.btn-container{
+    margin-top: 25px;
+}
+
+.post-title-btn {
+    background: none;
+    border: none;
+    color: #004289;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: left;
+    padding: 4px 0;
+    margin:5px 0px;
+}
+
+.post-title-btn:hover {
+    text-decoration: underline;
+}
+
+.delete-btn {
+    margin-left: 10px;
+    background-color: #dfdfdf;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #FF4500;
+}

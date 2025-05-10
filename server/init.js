@@ -257,6 +257,7 @@ async function initializeDB()
         startDate: new Date('August 10, 2014 04:18:00'),
         members: [userRef3._id, userRef2._id], // Modified data
         memberCount: 2,
+        createdBy: userRef3._id
     };
     const community2 = { // community object 2
         communityID: 'community2',
@@ -266,23 +267,18 @@ async function initializeDB()
         startDate: new Date('May 4, 2017 08:32:00'),
         members: [ userRef2._id, userRef1._id], // Modified data 
         memberCount: 2,
+        createdBy: userRef2._id
     };
     let communityRef1 = await createCommunity(community1);
     console.log(communityRef1);
     let communityRef2 = await createCommunity(community2);
+    console.log(communityRef2);
     
+    mongoose.connection.close();
 }
 
 function createCommunity (community)
 {
-    // const community = 
-    // {
-    //     name: communityObj.name,
-    //     description: communityObj.description,
-    //     postIDs: communityObj.postIDs,
-    //     startDate: 
-
-    // }
     const newCommunity = new CommunityModel(community);
     return newCommunity.save();
 }

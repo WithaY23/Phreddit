@@ -237,7 +237,7 @@ export default function Main_Content()
                     <Banner view={view} setView={setView} setSearchTerms={setSearchTerms} currentUser={currentUser} 
                         setCurrentUser={setCurrentUser}/>
                     <div className="below-header">
-                        <NavBar view={view} page={page} communities={communitiesArr} setView={setView} setPage={setPage}/>
+                        <NavBar view={view} page={page} communities={communitiesArr} setView={setView} setPage={setPage} currentUser={currentUser}/>
                         <div className="main-content">
                             {display()}
                         </div>

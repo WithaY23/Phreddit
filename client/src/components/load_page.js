@@ -84,7 +84,7 @@ function PostList(props){
                 console.warn("Post ID not found in any community:", post._id);
             }
             const communityName = community ? community.name : "Unknown";
-            const username = post.postedBy;
+            const username = post.postedBy.displayName;
             //const timestamp = timeConverter(post.postedDate);
             const post_title = post.title;
             const content = post.content.substring(0, 80) + "...";
