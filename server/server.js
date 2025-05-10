@@ -275,7 +275,7 @@ app.post("/comments/updateCommentVote/:commentID/:votername/:newVote", async(req
 app.get('/posts', async (req, res) => {
     try 
     {
-    const posts = await Post.find().populate('linkFlairID').populate('community'); //Post.find(), find all the posts
+    const posts = await Post.find().populate('linkFlairID').populate('community').populate('postedBy'); //Post.find(), find all the posts
     res.status(200).json(posts);     //send date in json
     } catch (err) 
     {
@@ -509,6 +509,17 @@ app.get("/users/username/:displayName", async (req,res) => {
   }
 })
 
+app.get("/users/:userID/reputation", async (req,res) => {
+    try{
+        const user = await User.findById(req.params.userID);
+        res.status(200).json({reputation: user.reputation});
+    }
+    catch{
+        res.status(500).send("fail to get reputation");
+    }
+})
+
+
 // Try to find user email and password
 // app.post("/users/login/:emailAddress/:password", async (req,res) => {
 //     try
@@ -579,6 +590,90 @@ app.post("/users/logout", (req,res) => {
     });
 })
 
+//-----------------------------deletion request-----------------------------------
+app.delete("/comments/:commentID", async (req,res) => {   //delete comment
+    try{
+        const commentID = req.params.commentID;
+        await delete_comment_and_replies(commentID);
+
+        res.status(200).json({success: "comment deleted"});
+    }
+    catch{
+        res.status(500).json({error: "failed to delete comment"});
+    }
+});
+
+app.delete("/posts/:postID", async (req,res) => { //delete post
+    try{
+        const postID = req.params.postID;
+        const post = await Post.findById(postID); //find post
+        if(!post){
+            res.status(404).json({error: "post not found"});
+        }
+
+        for(const comment of post.commentIDs){ //delete all comment first
+            await delete_comment_and_replies(comment);
+        }
+
+        await Post.findByIdAndDelete(postID); //delete the post
+
+        //clean up community's postIDs
+        await Community.updateMany({postIDs: postID},{$pull:{postIDs: postID}});
+        await Linkflair.updateMany({postIDs: postID},{$pull:{postIDs: postID}});
+
+        res.status(200).json({success: "post deleted"});
+    }
+    catch{
+        res.status(500).json({error: "failed to delete post"});
+    }
+});
+
+app.delete("/communities/:communityID", async (req,res) => {
+    try{
+        const communityID = req.params.communityID;
+        const community = await Community.findById(communityID);
+        if(!community){
+            res.status(404).json({error: "community not found"});
+        }
+
+        for(const postID of community.postIDs){        //for all posts of community
+            const post = await Post.findById(postID);  //find the post
+            if(post){
+                for(const commentID of post.commentIDs){    //for each comment
+                    await delete_comment_and_replies(commentID);  //delete comment and all replies
+                }
+                await Post.findByIdAndDelete(postID);   //delete post
+                await Linkflair.updateMany({postIDs: postID}, {$pull:{postIDs: postID }});
+            }
+        }
+        await Community.findByIdAndDelete(communityID);  //delete community
+        res.status(200).json({success: "community deleted"});
+
+    }
+    catch{
+        res.status(500).json({error: "failed to delete community"});
+    }
+});
+
+async function delete_comment_and_replies(commentID){
+    try{
+        const comment = await Comment.findById(commentID);
+        if (!comment) return;
+
+        for(const reply of comment.commentIDs){ //all replies
+            await delete_comment_and_replies(reply);
+        }
+        if(comment.postID){
+            await Post.updateOne({_id:comment.postID},{$pull:{commentIDs:commentID}});
+        }
+
+        await Comment.findByIdAndDelete(commentID); //deletion
+    }
+    catch{
+        console.error("fail to delete comment");
+    }
+}
+//-------------------------------------------------------------------------------------
 
 //start the server
 app.listen(8000, () => {console.log("Server listening on port 8000...");});

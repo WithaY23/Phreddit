@@ -1,4 +1,6 @@
 import "../stylesheets/profile_page.css"
+import { useState, useEffect } from "react";
+import axios from 'axios';
 //1.user must be logged in
 //2.user clicked on the profile button
 
@@ -7,7 +9,192 @@ export default function ProfilePage(props){
     const setView = props.setView;
     const user = props.currentUser;
 
+    const [communitiesArr,setCommunitiesArr] = useState([]);
+    const [reputation, setReputation] = useState(0);
+    const [postsArr,setPostsArr] = useState([]);
+    const [commentsArr,setCommentsArr] = useState([]);
+    const [selected, setSelected] = useState("Posts");
+
+    useEffect(() => 
+    {
+        const get_data = async () =>{
+            try {
+                const comms = await axios.get("http://localhost:8000/communities/");
+                const posts = await axios.get("http://localhost:8000/posts/");
+                const comments = await axios.get("http://localhost:8000/comments/");
+                const rep = await axios.get(`http://localhost:8000/users/${user.id}/reputation`);  //only get reputation
+
+                // Update each state variable with the gathered data
+                setCommunitiesArr(comms.data); 
+                setPostsArr(posts.data);
+                setCommentsArr(comments.data);
+                setReputation(rep.data.reputation);  
+
+            } catch (err) {
+                console.error("Error fetching data:", err);
+            }
+        };
+
+        get_data();
+    }, [view]);
+
+
+    async function delete_post(postID){ //delete post request
+        try{
+            await axios.delete(`http://localhost:8000/posts/${postID}`);  //send request to delete
+            console.log("deleted post success");
+
+            //update postArr and comment
+            const [new_posts, new_comments] = await Promise.all([
+                axios.get("http://localhost:8000/posts/"),
+                axios.get("http://localhost:8000/comments/")
+            ]);
+            setPostsArr(new_posts.data);
+            setCommentsArr(new_comments.data);
+        }
+        catch(err){
+            console.log("fail to delete post.",err);
+        }
+    }
+
+    function user_posts(){   //to return all user's posts
+        const user_posts = postsArr.filter(post => {
+            const postedBy = typeof post.postedBy === 'string' ? post.postedBy : post.postedBy._id; //if populated, it will be string Name
+            return postedBy === user.id;
+        });
+        
+        if(user_posts.length === 0){
+            return <p>No posts created yet.</p>;
+        }
+
+        return (
+            <div className="user-posts-list">
+                {user_posts.map(post => (
+                    <div key={post._id}>
+                        <button className="post-title-btn" 
+                            onClick={() => {
+                                setView("Create-Post-Page");
+                            }}>{post.title}
+                        </button>
+                        <button className="delete-btn" 
+                                onClick={async () => {
+                                    const confirm = window.confirm("are you sure you want to delete this post")
+                                    if(confirm){
+                                        await delete_post(post._id);
+                                    }
+                                }}>Delete
+                        </button>
+                    </div>
+                ))}
+            </div>
+        )
+    }
+
+    async function delete_community(communityID){
+        try{
+            await axios.delete(`http://localhost:8000/communities/${communityID}`);  //send request to delete
+            console.log("deleted community success");
+
+            //update postArr and comment
+            const [new_posts, new_comments, new_communities] = await Promise.all([
+                axios.get("http://localhost:8000/posts/"),
+                axios.get("http://localhost:8000/comments/"),
+                axios.get("http://localhost:8000/communities/")
+            ]);
+            setPostsArr(new_posts.data);
+            setCommentsArr(new_comments.data);
+            setCommunitiesArr(new_communities.data);
+        }
+        catch(err){
+            console.log("fail to delete community.",err);
+        }
+    }
+
+    function user_communities(){ //to return all user's communities
+        const user_communities = communitiesArr.filter(community => {
+            //if populated, it will be string Name
+            const createdBy = typeof community.createdBy === 'string' ? community.createdBy : community.createdBy._id; 
+            return createdBy === user.id;
+        });
+        
+        if(user_communities.length === 0){
+            return <p>No communities created yet.</p>;
+        }
+
+        return (
+            <div className="user-communities-list">
+                {user_communities.map(community => (
+                    <div key={community._id}>
+                        <button className="post-title-btn" 
+                            onClick={() => {
+                                setView("Create-Community-Page");
+                            }}>{community.name}
+                        </button>
+                        <button className="delete-btn" 
+                                onClick={async () => {
+                                    const confirm = window.confirm("are you sure you want to delete this community")
+                                    if(confirm){
+                                        await delete_community(community._id);
+                                    }
+                                }}>Delete
+                        </button>
+                    </div>
+                ))}
+            </div>
+        )
+    }
+
+    async function delete_comment(commentID){ // to delete a comment
+        try{
+            await axios.delete(`http://localhost:8000/comments/${commentID}`);  //send request to delete
+            console.log("deleted comment success");
+
+            const new_comments = await axios.get("http://localhost:8000/comments/");
+            setCommentsArr(new_comments.data);
+        }
+        catch(err){
+            console.log("fail to delete comment.",err);
+        }
+    }
+
+    function user_comments(){ // to return user's comments
+        const user_comments = commentsArr.filter(comments => {
+            //if populated, it will be string Name
+            const commentedBy = typeof comments.commentedBy === 'string' ? comments.commentedBy : comments.commentedBy._id; 
+            return commentedBy === user.id;
+        });
+        
+        if(user_comments.length === 0){
+            return <p>No comments created yet.</p>;
+        }
+
+        return (
+            <div className="user-comments-list">
+                {user_comments.map(comment => (
+                    <div key={comment._id}>
+                        <button className="post-title-btn" 
+                            onClick={() => {
+                                setView("Create-Comment-Page");
+                            }}>{comment.content.substring(0, 20)}...
+                        </button>
+                        <button className="delete-btn" 
+                                onClick={async () => {
+                                    const confirm = window.confirm("are you sure you want to delete this comment")
+                                    if(confirm){
+                                        await delete_comment(comment._id);
+                                    }
+                                }}>Delete
+                        </button>
+                    </div>
+                ))}
+            </div>
+        )
+    }
+
+    
+
     return (
+        <>
         <div className="profile-container">
             <h1>User Profile</h1>
             <div className="profile-info">
@@ -18,9 +205,27 @@ export default function ProfilePage(props){
                     <span className="label">Email:</span><span className="value">{user.email}</span>
                 </div>
                 <div className="row">
-                    <span className="label">Reputation:</span><span className="value">100</span>
+                    <span className="label">Reputation:</span><span className="value">{reputation}</span>
                 </div>
             </div>
+
+            <div className="btn-container">
+                <button className={`section-btn ${selected === "Posts" ? "active" : ""}`} id="posts-btn"
+                        onClick={() => setSelected("Posts")}>Posts</button>
+
+                <button className={`section-btn ${selected === "Communities" ? "active" : ""}`} id="communities-btn"
+                        onClick={() => setSelected("Communities")}>Communities</button>
+
+                <button className={`section-btn ${selected === "Comments" ? "active" : ""}`} id="comments-btn"
+                        onClick={() => setSelected("Comments")}>Comments</button>
+            </div>
+
+            <div className="content-container">
+                {selected === "Posts" && user_posts()}
+                {selected === "Communities" && user_communities()}
+                {selected === "Comments" && user_comments()}
+            </div>
         </div>
+        </>
     )
 }
