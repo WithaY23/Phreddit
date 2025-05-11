@@ -114,6 +114,36 @@ app.post("/communities/update-community-postIDs/:communityID", async(req,res) =>
     }
 }) //update community postID
 
+app.post("/communities/update/removepost", async (req,res) =>{
+    try
+    {
+        const postID = req.body["postID"];
+        const communityID = req.body["communityID"];
+
+        const updatedCommunity = await Community.findByIdAndUpdate(communityID,
+            {
+                $pull: {postIDs: postID}
+            },
+            {new: true}
+        );
+
+        if (!updatedCommunity) 
+        {
+            return res.status(404).json({error: "Community not found"});
+        }
+        res.status(200).json({success: "Post removed from community", community:updatedCommunity});
+
+    }
+    catch(err)
+    {
+        console.error("Error removing post from community: ", err);
+        res.status(500).json({error: "Failed to remove post from community"});
+    }
+
+
+})
+
+
 //get data from client
 app.post('/communities', async (req, res) => {
     try{
@@ -152,8 +182,8 @@ app.get("/comments", async (req, res) => {
 });
 
 //need updating
-app.get("/comment/:commentID", async (req,res) => {
-    res.status(200).json(Comment.find({commentID: req.params['commentID']}, 'param field'));
+app.get("/comments/:commentID", async (req,res) => {
+    res.status(200).json(Comment.find({commentID: req.params['commentID']}).exec());
 });
 
 //case for loading Post page, need comments as well
@@ -173,7 +203,9 @@ app.post("/comments", async(req, res) => {
     try
     {
         const comment = req.body;
+        console.log(comment);
         const newComment = new Comment(comment);
+        console.log(newComment);
         const savedComment = await newComment.save();
         res.status(201).json({success: "Created comment", comment: savedComment})
     }
@@ -201,70 +233,77 @@ app.post("/comments/update-comments-commentIDs/:commentID", async(req,res) => {
         res.status(500).json({error: "Failed to get update comment"})
     }
 })
-app.post("/comments/updateCommentVote/:commentID/:votername/:newVote", async(req,res) =>{
+app.post("/comments/updateCommentVote/:newVote", async(req,res) =>{
     try
     {
         //votes have value of {-1,1} dislike and like
-        const commentID = req.params["commentID"];
-        const votername = req.params["votername"];
+        const commentID = req.body["commentID"];
+        const votername = req.body["votername"];
         // const previousVote = req.params["previousVote"]; //voters previous vote, can't assume previous vote
         const newVote = req.params["newVote"]; //voters new vote 
 
         
         const comment = await Comment.findOne({_id: commentID}).populate('voteUp').populate('voteDown');
-        const previousVote = comment.voteUp.find(votername) ? 1 : (comment.voteDown.find(votername) ? -1: 0);
+        const previousVote = comment.voteUp.find((name) => name._id.toString() === votername.id) ? 1 : (comment.voteDown.find((name) => name._id.toString() === votername.id) ? -1: 0);
 
         const voteDifference = newVote - previousVote; 
 
+        const voterID = votername.id;
 
 
         switch (voteDifference)
         {
             case 0: //user chose same option again, "deselect" it
             {
+                const voteStatus = 0;
                 //find out what the previous vote was to deselect it, 
                 if (previousVote === 1) //previous vote was a like
                 {
-                    await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: -1}}) //may need to unencrypt postedBy
-                    res.status(200).json(await Comment.findByIdAndUpdate(commentID, {$pop: {voteUp: votername}}, {new: true}) ) //may need to unencrypt votersname
+                    await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: -5}}) //may need to unencrypt postedBy
+                    res.status(200).json({comment: await Comment.findByIdAndUpdate(commentID, {$pull: {voteUp: voterID}}, {new: true}), voteStatus: voteStatus }) //may need to unencrypt votersname
                 }
-                else
+                else//previous vote was a dislike
                 {
-                    await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: 1}}) //may need to unencrypt postedBy
-                    res.status(200).json(await Comment.findByIdAndUpdate(commentID, {$pop: {voteDown: votername}}, {new:true}))  //may need to unencrypt votersname
+                    await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: 10}}) //may need to unencrypt postedBy
+                    res.status(200).json({comment: await Comment.findByIdAndUpdate(commentID, {$pull: {voteDown: voterID}}, {new:true}), voteStatus: voteStatus})  //may need to unencrypt votersname
                 }
                 break;
             }
             case 2: //user went from dislike to like
             {
-                await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: 2}}) //may need to unencrypt postedBy
-                res.status(200).json(await Comment.findByIdAndUpdate(commentID, {$pop: {voteDown: votername}, $push: {voteUp:votername}}, {new: true}))  //may need to unencrypt votersname
+                const voteStatus = 1;
+                await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: 15}}) //may need to unencrypt postedBy
+                res.status(200).json({comment: await Comment.findByIdAndUpdate(commentID, {$pull: {voteDown: voterID}, $push: {voteUp:voterID}}, {new: true}), voteStatus: voteStatus})  //may need to unencrypt votersname
                 break;
             }
         case 1: //user went from no vote to like
             {
-                await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: 1}}) //may need to unencrypt postedBy
-                res.status(200).send(Comment.findByIdAndUpdate(commentID, {$push: {voteUp:votername}}, {new: true}))  //may need to unencrypt votersname
+                const voteStatus = 1;
+                await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: 5}}) //may need to unencrypt postedBy
+                console.log(commentID);
+                res.status(200).json({comment: await Comment.findByIdAndUpdate(commentID, {$push: {voteUp:voterID}}, {new: true}), voteStatus: voteStatus})  //may need to unencrypt votersname
                 break;
             }
         case -1: //user went from no vote to dislike
             {
-                await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: -1}}) //may need to unencrypt postedBy
-                res.status(200).json(await Comment.findByIdAndUpdate(commentID, {$push: {voteDown:votername}}, {new:true}))  //may need to unencrypt votersname
+                const voteStatus=  -1;
+                await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: -10}}) //may need to unencrypt postedBy
+                res.status(200).json({comment: await Comment.findByIdAndUpdate(commentID, {$push: {voteDown:voterID}}, {new:true}), voteStatus: voteStatus})  //may need to unencrypt votersname
                 break;
             }
         case -2: //user went from like to dislike
             {
-                await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: -2}}) //may need to unencrypt postedBy
-                res.status(200).json(await Comment.findByIdAndUpdate(commentID, {$pop: {voteUp: votername}, $push: {voteDown:votername}}, {new:true }))  //may need to unencrypt votersname
+                const voteStatus=  -1;
+                await User.updateOne({_id: comment.commentedBy}, {$inc: {reputation: -15}}) //may need to unencrypt postedBy
+                res.status(200).json({comment: await Comment.findByIdAndUpdate(commentID, {$pull: {voteUp: voterID}, $push: {voteDown:voterID}}, {new:true }), voteStatus: voteStatus})  //may need to unencrypt votersname
                 break;
             }
         }
     }
     catch(err)
     {
-        console.error("Error getting the linkflairs: ", err);
-        res.status(500).json({error: "Failed to update posts"});
+        console.error("Error voting on the comments: ", err);
+        res.status(500).json({error: "Failed to vote on comments"});
     }
 
 })
@@ -356,70 +395,138 @@ app.post("/posts/update-posts-views/:postID", async(req,res) =>{
     }
 })
 
-app.post("/posts/updatePostVote/:postID/:votername/:newVote", async(req,res) =>{
+//return a JSON object of {post: newPost, voteStatus: [-1,0,1]}
+app.post("/posts/updatePostVote/:newVote", async(req,res) =>{
     try
     {
+        console.log("Here in new vote for post")
         //votes have value of {-1,1} dislike and like
-        const postID = req.params["postID"];
-        const votername = req.params["votername"];
+        const postID = req.body["postID"];
+        const votername = req.body["votername"];
         // const previousVote = req.params["previousVote"]; //voters previous vote, can't assume previous vote
         const newVote = req.params["newVote"]; //voters new vote 
-        
+    
         const post = await Post.findOne({_id: postID}).populate('voteUp').populate('voteDown');
-        const previousVote = post.voteUp.find(votername) ? 1 : (post.voteDown.find(votername) ? -1: 0);
+        console.log("Post object", post);
+        console.log("Votername object", votername);
 
+        // votername is an object with a string .id field
+        // voteUp contains users with a 
+        // console.log("To string of voteUp user id", post.voteUp[0]._id.toString());
+        const previousVote = post.voteUp.find((name) => name._id.toString() === votername.id) ? 1 : (post.voteDown.find((name) => name._id.toString() === votername.id) ? -1: 0);
+
+        const voterID = votername.id;
 
         const voteDifference = newVote - previousVote; 
 
-
+        //like: +5; dislike: -10
+        //return a JSON object of {post: newPost, voteStatus: [-1,0,1]}
         switch (voteDifference)
         {
             case 0: //user chose same option again, "deselect" it
             {
+                const voteStatus = 0;
                 //find out what the previous vote was to deselect it, 
                 if (previousVote === 1) //previous vote was a like
                 {
-                    await User.updateOne({_id: post.postedBy}, {$inc: {reputation: -1}}) //may need to unencrypt postedBy
-                    res.status(200).json(await Post.findByIdAndUpdate(postID, {$pop: {voteUp: votername}}, {new: true})) //may need to unencrypt votersname
+                    await User.updateOne({_id: post.postedBy}, {$inc: {reputation: -5}}) //may need to unencrypt postedBy
+                    res.status(200).json({post: await Post.findByIdAndUpdate(postID, {$pull: {voteUp: voterID}}, {new: true}), voteStatus: voteStatus}) //may need to unencrypt votersname
                 }
                 else
                 {
-                    await User.updateOne({_id: post.postedBy}, {$inc: {reputation: 1}}) //may need to unencrypt postedBy
-                    res.status(200).send(await Post.findByIdAndUpdate(postID, {$pop: {voteDown: votername}}, {new:true})) //may need to unencrypt votersname
+                    await User.updateOne({_id: post.postedBy}, {$inc: {reputation: 10}}) //may need to unencrypt postedBy
+                    res.status(200).json({post: await Post.findByIdAndUpdate(postID, {$pull: {voteDown: voterID}}, {new:true}), voteStatus: voteStatus}) //may need to unencrypt votersname
                 }
                 break;
             }
             case 2: //user went from dislike to like
             {
-                await User.updateOne({_id: post.postedBy}, {$inc: {reputation: 2}}) //may need to unencrypt postedBy
-                res.status(200).send(await Post.findByIdAndUpdate(postID, {$pop: {voteDown: votername}, $push: {voteUp:votername}}, {new: true})) //may need to unencrypt votersname
+                const voteStatus = 1;
+                await User.updateOne({_id: post.postedBy}, {$inc: {reputation: 15}}) //may need to unencrypt postedBy
+                res.status(200).json({post: await Post.findByIdAndUpdate(postID, {$pull: {voteDown: voterID}, $push: {voteUp:voterID}}, {new: true}), voteStatus: voteStatus}) //may need to unencrypt votersname
                 break;
             }
         case 1: //user went from no vote to like
             {
-                await User.updateOne({_id: post.postedBy}, {$inc: {reputation: 1}}) //may need to unencrypt postedBy
-                res.status(200).send(await Post.findByIdAndUpdate(postID, {$push: {voteUp:votername}}, {new: true})) //may need to unencrypt votersname
+                const voteStatus = 1;
+                console.log("Post page no vote to like")
+                console.log("PostID:", postID);
+                console.log("Votername object")
+                console.log(votername)
+                await User.updateOne({_id: post.postedBy}, {$inc: {reputation: 5}}) //may need to unencrypt postedBy
+                res.status(200).json({post: await Post.findByIdAndUpdate(postID, {$push: {voteUp:voterID}}, {new: true}), voteStatus: voteStatus}) //may need to unencrypt votersname
                 break;
             }
         case -1: //user went from no vote to dislike
             {
-                await User.updateOne({_id: post.postedBy}, {$inc: {reputation: -1}}) //may need to unencrypt postedBy
-                res.status(200).send(await Post.findByIdAndUpdate(postID, {$push: {voteDown:votername}}, {new:true})) //may need to unencrypt votersname
+                const voteStatus= -1;
+                await User.updateOne({_id: post.postedBy}, {$inc: {reputation: -10}}) //may need to unencrypt postedBy
+                res.status(200).json({post: await Post.findByIdAndUpdate(postID, {$push: {voteDown:voterID}}, {new:true}), voteStatus: voteStatus}) //may need to unencrypt votersname
                 break;
             }
         case -2: //user went from like to dislike
             {
-                await User.updateOne({_id: post.postedBy}, {$inc: {reputation: -2}}) //may need to unencrypt postedBy
-                res.status(200).send(Post.findByIdAndUpdate(postID, {$pop: {voteUp: votername}, $push: {voteDown:votername}}, {new:true }) )//may need to unencrypt votersname
+                console.log("In like to dislike")
+                const voteStatus= -1;
+                await User.updateOne({_id: post.postedBy}, {$inc: {reputation: -15}}) //may need to unencrypt postedBy
+                console.log("After user update")
+                res.status(200).json({post: await Post.findByIdAndUpdate(postID, {$pull: {voteUp: voterID}, $push: {voteDown:voterID}}, {new:true }), voteStatus: voteStatus })//may need to unencrypt votersname
                 break;
             }
         }
     }
     catch(err)
     {
-        console.error("Error getting the linkflairs: ", err);
+        console.error("Error updating vote for post page: ", err);
         res.status(500).json({error: "Failed to update posts"});
     }
+
+})
+app.post("/posts/update/editpost", async (req,res) =>{
+    const post = req.body['post'];
+    try{
+if(post.hasOwnProperty("linkFlairID"))
+    {
+        const newPost = await Post.findByIdAndUpdate(post.postID, 
+            {_id: post.postID, 
+            title: post.title, 
+            content: post.content, 
+            linkFlairID: post.linkFlairID,
+            postedBy: post.postedBy,
+            postedDate: post.postedDate,
+            commentIDs: post.commentIDs,
+            views: post.views,
+            voteUp: post.voteUp,
+            voteDown: post.voteDown
+        }, {new: true})
+        res.status(200).json({post: newPost, success: "Updating post is a success"});
+    }
+    else
+    {
+        const newPost = await Post.findByIdAndUpdate(post.postID, 
+            {_id: post.postID, 
+            title: post.title, 
+            content: post.content, 
+            postedBy: post.postedBy,
+            postedDate: post.postedDate,
+            commentIDs: post.commentIDs,
+            views: post.views,
+            voteUp: post.voteUp,
+            voteDown: post.voteDown
+        }, {new: true})
+
+        res.status(200).json({post: newPost, success: "Updating post is a success"});
+    }
+    }
+
+    catch(err)
+    {
+        console.error("Could not edit post to new data", err);
+        res.status(500).json({error: "Could not edit post to new data"})
+    }
+    
+
+
 
 })
 
@@ -486,13 +593,15 @@ app.get("/users/", async (req,res) => {
   }
 })
 
-app.get("/users/username/:displayName", async (req,res) => {
+app.get("/users/username/:id", async (req,res) => {
   try
   {
-    const displayName = req.params["displayName"];
+    const id = req.params["id"];
+    console.log("HIIII" , id);
     const users = await User.find();
-    const user = users.find(async (user) => {
-      await verifyEncryption(displayName, user.displayName)
+    console.log(users);
+    const user = users.find((user) => {
+      return user._id.toString() === id
     })
     if(user)
     {
@@ -500,7 +609,7 @@ app.get("/users/username/:displayName", async (req,res) => {
     }
     else
     {
-      res.status(500).send({error: "Failed to find user"})
+      res.status(404).send({error: "Failed to find user"})
     }
   }
   catch(err)

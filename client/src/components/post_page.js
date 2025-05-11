@@ -5,18 +5,19 @@ import {addHyperlinks} from "./hyperlink";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-
+//USES USERNAME INSTEAD OF CURRENTUSER
 //comment container
 function CommentSection(props) // props will be used for: comments, page
 {
     const comments = props.comments;
     const post = props.page;
+    const view = props.view;
     const post_comment_array = comments.filter( //return an array of comment objects replying to the post
         (comment) => post.commentIDs.includes(comment._id)).toSorted( //verify post comments contain that commentID
             (cmt1,cmt2)=>new Date(cmt2.commentedDate) - new Date(cmt1.commentedDate)); //had to add new Date constructor, ERROR: no clue why...
     const formatted_comments= post_comment_array.map(cmt =>
         {
-            return <Comment key={cmt._id} username={props.username} comment={cmt} comments ={comments} changeView={props.changeView} changePage={props.changePage}/>
+            return <Comment key={cmt._id} username={props.username} comment={cmt} comments ={comments} view={view} changeView={props.changeView} changePage={props.changePage}/>
         })
     
     return (
@@ -24,7 +25,7 @@ function CommentSection(props) // props will be used for: comments, page
     <div className="comment-section">
         {formatted_comments}
     </div>
-)
+        )
 
     // <Nested_Comment comments ={post_comment_array} /> //will need to recursively create comments and call itself
 
@@ -41,6 +42,7 @@ function CommentSection(props) // props will be used for: comments, page
         const timestamp= timeConverter(props.comment.commentedDate);
         const content = props.comment.content;
         const votes = props.comment.voteCount
+        const view=  props.view;
 
         return(
             <div className="comment">
@@ -48,7 +50,7 @@ function CommentSection(props) // props will be used for: comments, page
             <span className="post-timestamp">{timestamp.toLocaleString()}</span>
             <div className="comment-content">{addHyperlinks(content)}</div>
             
-            {username ? <VoteDisplay contentType="Comment" content={props.comment} username= {username}/> : <span>{votes}</span> }
+            {username ? <VoteDisplay contentType="Comment" content={props.comment} username= {username} view={view}/> : <span className="vote-description">Like Count: {votes}</span> }
             
             {username && <button className="button" onClick={()=>
             {
@@ -92,8 +94,9 @@ function Counters(props) //props will be used for: page, comments
     const post = props.page; //pass down page object as a prop
     const username = props.username;
     // const [voteCount, setVoteCount] = useState(post.voteCount)
-    const voteCount = props.voteCount;
+    const voteCount = post.voteCount;
     const comments = props.comments;
+    const view = props.view;
     console.log("HI");
     
    return (<div className="counters">
@@ -102,9 +105,9 @@ function Counters(props) //props will be used for: page, comments
             <span id="vote-label">Votes: </span>
             <span id="view-count">{post.views}</span>
             <span id="comment-count">{getTotalCommentCount(post.commentIDs,comments)}</span>
-            {username ?  <VoteDisplay contentType="Post" content={post} username= {username} /> :  <span id="vote-count">
+            {username ?  <VoteDisplay contentType="Post" content={post} username= {username} view = {view}/> :  <span id="vote-count">
                 
-                {voteCount} NOT LOGGED IN</span>}
+                Like Count: {voteCount}</span>}
     </div>)
 }
 
@@ -112,22 +115,35 @@ function VoteDisplay(props) // props uses: contentType (post/comment), content (
 {
     const contentType= props.contentType;
     const content= props.content;
-    const username = props.username;
+    const username = props.username; //FIX: EDITED TO FIT PASSING USERNAME OBJECT
     const [voteCount, setVoteCount] = useState(content.voteCount)
-    const [currentVote, setCurrentVote] = useState(0); //currentVote.values = [-1,1]
+    const [currentVote, setCurrentVote] = useState(0); //currentVote.values = [-1,0,1]
 
+    console.log(content);
+    useEffect(() =>
+    {
+
+        const vote = content.voteUp.some((name) => name=== username.id)? 1
+            : content.voteDown.some((name) => name === username.id)
+            ? -1
+            : 0;
+        console.log(content)
+        console.log(username.id);
+        console.log("Current vote:", vote);
+        setCurrentVote(vote);
+    },[props.view]) //onmount
 
 
 
     return(
-        <span id="vote-count">
+        <span id="vote-count" className="vote-description">
             {currentVote === 1 ? 
-                    <button className="voted" onClick={() => changeVote(1,setCurrentVote, username, content, contentType, setVoteCount)}> Like</button>
-                    : <button onClick={() => changeVote(1, setCurrentVote, username, content, contentType, setVoteCount)}>Like</button>}
+                    <button className="button voted" onClick={() => changeVote(1,setCurrentVote, username, content, contentType, setVoteCount)}> Like</button>
+                    : <button className="button"onClick={() => changeVote(1, setCurrentVote, username, content, contentType, setVoteCount)}>Like</button>}
             Like Count: {voteCount}
                     {currentVote === -1 ? 
-                    <button className="voted" onClick={() => changeVote(-1,setCurrentVote, username, content, contentType, setVoteCount)}>Dislike</button> 
-                    : <button onClick={() => changeVote(-1, setCurrentVote, username, content, contentType, setVoteCount)}>Dislike</button>}
+                    <button className="button voted" onClick={() => changeVote(-1,setCurrentVote, username, content, contentType, setVoteCount)}>Dislike</button> 
+                    : <button className="button" onClick={() => changeVote(-1, setCurrentVote, username, content, contentType, setVoteCount)}>Dislike</button>}
         </span>
     )
 }
@@ -137,30 +153,45 @@ async function changeVote(newVote, setCurrentVote, votername, content, contentTy
     //need to: update vote state appearance, update vote count appearance, 
     try
     {
-        if (contentType === "Post")
-        {
-            const post = await axios.post(`http://localhost.8000/posts/updatePostVote/${content}/${votername}/${newVote}`);
-            setCurrentVote(newVote);
-            setVoteCount(post.voteCount);
-        }
-        else if(contentType === "Comment")
-        {
-            await axios.post(`http://localhost.8000/posts/updateCommentVote/${content}/${votername}/${newVote}`);
-            const comment = (await axios.get(`http://localhost.8000/comments/${content._id}`)).data
-            setCurrentVote(newVote);
-            setVoteCount(comment.voteCount);
-        }
+    const voternameObject = (await axios.get(`http://127.0.0.1:8000/users/username/${votername.id}`)).data;
+        if(voternameObject.reputation < 50)//MAKE REQUEST
+            {
+                alert("Sorry, you do not have enough reputation to vote, try creating some new content first!");
+            } 
         else
         {
-            console.error("Unknown vote on content")
+            const id= content._id;  //FIX: EDITED TO FIT VOTING EXPECTED SERVER ID
+            if (contentType === "Post") //distinguish between post or comment replying to
+            {
+                console.log("username value in post like update:", votername);
+                //update the posts vote
+                const {post, voteStatus} = (await axios.post(`http://127.0.0.1:8000/posts/updatePostVote/${newVote}`,{votername: votername, postID: id})).data; //return the new post and current voteStatus (users new vote) from axios
+                console.log("after posting update to post like");
+                setCurrentVote(voteStatus);
+                setVoteCount(post.voteCount);
+            }
+            else if(contentType === "Comment")
+            {
+                const {comment, voteStatus} = (await axios.post(`http://127.0.0.1:8000/comments/updateCommentVote/${newVote}`, {commentID: id, votername: votername})).data;
+                //get the comment to return the voteCount
+                console.log(comment);
+                console.log(voteStatus);
+                setCurrentVote(voteStatus);
+                setVoteCount(comment.voteCount);
+            }
+            else
+            {
+                console.error("Unknown vote on content")
+            }
         }
+        
         
 
 
     }
     catch(err)
     {
-        console.error("Could not update users vote");
+        console.error("Could not update users vote", err);
     }
 
 }
@@ -173,7 +204,7 @@ async function changeVote(newVote, setCurrentVote, votername, content, contentTy
 
 
 
-
+//USES USERNAME INSTEAD OF CURRENTUSER
 // props will be used for: changeView, page (post object), comments, communities, linkFlair (removed changeComments)
 export default function Post_Page(props)
 {
@@ -273,14 +304,14 @@ export default function Post_Page(props)
         </div>
 
 
-        <Counters page= {post} comments={comments} username={username}/>
+        <Counters page= {post} comments={comments} username={username} view={props.view}/>
         {username && <button className="button comment-button" onClick={()=>
             {
                 props.changeView("Create-Comment-Page-Post");
                 props.changePage(post._id)
             }
         }>Add a comment</button> }
-        <CommentSection username={username} comments={comments} page={post} changeView={props.changeView} changePage={props.changePage}/>
+        <CommentSection username={username} comments={comments} view={props.view} page={post} changeView={props.changeView} changePage={props.changePage}/>
         
     </div>
     )

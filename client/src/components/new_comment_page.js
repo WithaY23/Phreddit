@@ -17,6 +17,7 @@ export default function New_Comment_Page(props)
 
     const replySubject = props.view;
     const ID = props.page;
+    const currentUser= props.currentUser;
     // const posts= props.posts;
     // const comments= props.comments;
 
@@ -65,8 +66,6 @@ export default function New_Comment_Page(props)
         {
             const comments = (await axios.get('http://localhost:8000/comments')).data;
             const posts = (await axios.get('http://localhost:8000/posts')).data;
-            let data = (await axios.get('http://localhost:8000/username/loggedin')).data
-            const {loggedin, username} = data;
             
 
             const comment = 
@@ -74,7 +73,7 @@ export default function New_Comment_Page(props)
                 commentID: "comment" + (comments.length + 1),
                 content: textbox,
                 commentIDs: [],
-                commentedBy: username,
+                commentedBy: currentUser.id,
                 commentedDate: today_date(new Date()),
             }
     
