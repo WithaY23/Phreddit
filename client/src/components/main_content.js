@@ -14,6 +14,7 @@ import WelcomePage from './WelcomePage.js';
 import LoginPage from './login_page.js'
 import axios from 'axios';
 import EditPostPage from './edit_post_page.js';
+import EditCommunityPage from './edit_community_page.js'
 
 //const model = new Model();
 
@@ -104,7 +105,8 @@ export default function Main_Content()
                     comments={commentsArr} 
                     searchTerms={searchTerms}
                     setXposts={setXposts}
-                    sortType={sortType}/>
+                    sortType={sortType}
+                    currentUser={currentUser}/>
                     {/* finicky code based off of model */}
                 </>);
             case "Post-Page":
@@ -158,7 +160,8 @@ export default function Main_Content()
                             xposts={xposts}
                             searchTerms={searchTerms}
                             sortType={sortType}       
-                            setSortType={setSortType}/>
+                            setSortType={setSortType}
+                            currentUser={currentUser}/>
                         <LoadPage 
                             view={view} 
                             page={page} 
@@ -216,6 +219,7 @@ export default function Main_Content()
                         setCommunities={setCommunitiesArr}
                         setView={setView}
                         setPage={setPage}
+                        currentUser={currentUser}
                     />
                     </>
                 );
@@ -234,6 +238,10 @@ export default function Main_Content()
             case "Edit-Post-Page":
                 return(
                     <EditPostPage view={view} setView={setView} page={page} currentUser={currentUser} />
+                )
+            case "Edit-Community-Page":
+                return(
+                    <EditCommunityPage view={view} setView={setView} page={page} currentUser={currentUser} />
                 )
             default:
                 alert("AHHHHH");
