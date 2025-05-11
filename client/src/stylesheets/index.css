@@ -164,3 +164,15 @@ code {
   appearance: none;
 }
 /* ------------------------------------------*/
+
+.join-btn {
+  margin-left: 10px;
+  background-color: #dfdfdf;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.join-btn:hover {
+  background-color: #FF4500;
+}

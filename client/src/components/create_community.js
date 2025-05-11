@@ -5,15 +5,13 @@ import axios from "axios";
 export default function Create_Community(props){
     const setCommunities = props.setCommunities;
     const setView = props.setView;
+    const currentUser = props.currentUser;
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
-    const [creator, setCreator] = useState("");
 
     const [nameError, setNameError] = useState("");
     const [descError, setDescError] = useState("");
-    const [creatoreError, setCreatorError] = useState("");
-
    
     //make sure input is valid when clicking the engender community button
     function check_valid(){
@@ -53,15 +51,6 @@ export default function Create_Community(props){
             }
         }
 
-        //check creator
-        if(creator.trim() === ""){
-            setCreatorError("Community name is required.");
-            valid = false;
-        }
-        //no error
-        else{
-            setCreatorError("");
-        }
         //alert("Create Community Successed!");
         return valid;
     }
@@ -81,8 +70,8 @@ export default function Create_Community(props){
                     description: description.trim(),
                     postIDs: [],
                     startDate: new Date(),
-                    members: [creator.trim()],
-                    memberCount: 1,
+                    members: [currentUser.id],
+                    createdBy: currentUser.id
                 };
 
                 return axios.post("http://localhost:8000/communities", new_community);
@@ -125,19 +114,6 @@ export default function Create_Community(props){
                 onChange={(input) => setDescription(input.target.value)}
             />
             <div className="error_msg">{descError}</div>
-            <br/>
-    
-            <label htmlFor="new_community_creator">
-                Community Creator:
-                {creator === "" && <span className="redstar" id="community_creator_redstar">*</span>}
-            </label><br/>
-            <textarea 
-                id="new_community_creator" 
-                placeholder="Enter Username"
-                value={creator}
-                onChange={(input) => setCreator(input.target.value)}
-            />
-            <div className="error_msg">{creatoreError}</div>
             <br/>
             <br/>
     

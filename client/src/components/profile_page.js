@@ -9,12 +9,14 @@ export default function ProfilePage(props){
     const setView = props.setView;
     const setPage =  props.setPage;
     const user = props.currentUser;
+    const isAdmin = user.isAdmin;
 
     const [communitiesArr,setCommunitiesArr] = useState([]);
     const [reputation, setReputation] = useState(0);
     const [postsArr,setPostsArr] = useState([]);
     const [commentsArr,setCommentsArr] = useState([]);
     const [selected, setSelected] = useState("Posts");
+    const [usersArr, setUsersArr] = useState([]);
 
     useEffect(() => 
     {
@@ -106,6 +108,7 @@ export default function ProfilePage(props){
             setPostsArr(new_posts.data);
             setCommentsArr(new_comments.data);
             setCommunitiesArr(new_communities.data);
+            window.location.reload();
         }
         catch(err){
             console.log("fail to delete community.",err);
@@ -129,7 +132,8 @@ export default function ProfilePage(props){
                     <div key={community._id}>
                         <button className="post-title-btn" 
                             onClick={() => {
-                                setView("Create-Community-Page");
+                                setView("Edit-Community-Page");
+                                setPage(community._id);
                             }}>{community.name}
                         </button>
                         <button className="delete-btn" 
@@ -193,7 +197,39 @@ export default function ProfilePage(props){
         )
     }
 
+    function phreddit_users() { //for users
+        if(usersArr.length === 0){
+            axios.get("http://localhost:8000/users/")
+                .then(res => setUsersArr(res.data))
+                .catch(err => console.error("Failed to load users", err));
+            return <p>Loading users...</p>;
+        }
     
+        return (
+            <div className="user-list">
+                {usersArr.map(u => (
+                    <div key={u._id}>
+                        <button className="post-title-btn"
+                            onClick={() => {
+                                setPage(u._id); //for reference to edit user
+                                setView("Profile-Page");
+                            }}>
+                            {u.displayName} | {u.email} | {u.reputation}
+                        </button>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    function formatDate(dateString){
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric"
+        });
+    }
 
     return (
         <>
@@ -209,6 +245,12 @@ export default function ProfilePage(props){
                 <div className="row">
                     <span className="label">Reputation:</span><span className="value">{reputation}</span>
                 </div>
+                <div className="row">
+                    <span className="label">Member since:</span>
+                    <span className="value">
+                        {user.createdDate ? formatDate(user.createdDate) : "Unknown"}
+                    </span>
+                </div>
             </div>
 
             <div className="btn-container">
@@ -220,12 +262,18 @@ export default function ProfilePage(props){
 
                 <button className={`section-btn ${selected === "Comments" ? "active" : ""}`} id="comments-btn"
                         onClick={() => setSelected("Comments")}>Comments</button>
+
+                {isAdmin && (
+                    <button className={`section-btn ${selected === "Users" ? "active" : ""}`} id="users-btn"
+                        onClick={() => setSelected("Users")}>Users</button>
+                )}
             </div>
 
             <div className="content-container">
                 {selected === "Posts" && user_posts()}
                 {selected === "Communities" && user_communities()}
                 {selected === "Comments" && user_comments()}
+                {selected === "Users" && isAdmin && phreddit_users()}
             </div>
         </div>
         </>
