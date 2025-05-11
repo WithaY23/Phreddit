@@ -13,8 +13,10 @@ export default function New_Post_Page(props)
     const [communities, setCommunities] = useState([]);
     // const [posts, setPosts] = useState([]); Not used by react components, only JS logic
     const [linkFlairs, setLinkFlairs] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const username = props.username;
+
+    const currentUser = props.currentUser;
     
     const fetchData = async () =>
         {
@@ -26,6 +28,7 @@ export default function New_Post_Page(props)
             // setPosts(p.data)
             setLinkFlairs(lf.data)
             console.log("Successfully fetched new post page data")
+            setLoading(false);
             }
             catch(err)
             {
@@ -109,34 +112,21 @@ export default function New_Post_Page(props)
             const p = await axios.get('http://localhost:8000/posts/');
             const c = await axios.get('http://localhost:8000/communities/')
             const lf = await axios.get('http://localhost:8000/linkflairs/')
+            console.log(currentUser);
+            const u = await axios.get('http://localhost:8000/users/username/'+ currentUser.id);
             
             const posts = p.data;
             const communities = c.data;
             const linkFlairs=  lf.data;
+            const user = u.data;
             
 
             async function push_data(post)
             {
                 const cmnty = communities.find((com) => com._id === community)
-                // cmnty.postIDs.push("p" + (posts.length + 1));
-                // const shallowCommunityArr= [...(communities)].filter(com => com._id !== community)  //FINICKY CODE, relies on recreating shallow instance and replacing data
-                // shallowCommunityArr.push(cmnty);
-
-                // setCommunities(shallowCommunityArr);
-
-                // const shallowPostArr = [...(posts)]; //FINICKY CODE, relies on recreating shallow instance and adding data
-                // shallowPostArr.push(post);
-                // changePosts(shallowPostArr);
                 console.log("POOOOSSSTTT", post);
                 console.log("Communitttyyy", cmnty);
-                // axios.post('http://localhost:8000/posts/', post).then( 
-                // (response) => { console.log(response.data.success); return axios.post('http://localhost:8000/communities/update-community/' + cmnty._id, response.data.post)}).then( //somehow update community instance
-                //     (response) =>{console.log(response.data.success); console.log("Finished both community and post update and post respectively")})
-                //     .catch((err) =>
-                //     {
-                //         console.log("posting post error: ", err)
-                //     }
-                // )
+            
                 try
                 {
                     const newPost = await axios.post('http://localhost:8000/posts/', post);
@@ -159,7 +149,7 @@ export default function New_Post_Page(props)
                 postID: "p" + (posts.length + 1),
                 title: postTitle,
                 content: postTextbox,
-                postedBy: username, 
+                postedBy: user, 
                 postedDate: today_date(),
                 commentIDs: [],
                 views: 0
@@ -193,7 +183,7 @@ export default function New_Post_Page(props)
                     title: postTitle,
                     content: postTextbox,
                     // linkFlairID: "lf" + (linkFlairs.length + 1),
-                    postedBy: username,
+                    postedBy: user,
                     postedDate: today_date(),
                     commentIDs: [],
                     views: 0
@@ -221,7 +211,7 @@ export default function New_Post_Page(props)
                         title: postTitle,
                         content: postTextbox,
                         linkFlairID: linkflairReference,
-                        postedBy: username,
+                        postedBy: user,
                         postedDate: today_date(),
                         commentIDs: [],
                         views: 0
@@ -260,6 +250,7 @@ Needed (get): communities, linkFlairs, posts
 (post): communities, linkFlairs, posts
 */
  return (
+    loading ? <p>Loading</p> :(
         <div className="under-main-content-header" id="posts_container">
             <div className="new-post-container">
                 <div className="new-post-header-container">
@@ -268,7 +259,7 @@ Needed (get): communities, linkFlairs, posts
                 </div>
                 <div id="community-selection-container">
                     <label htmlFor="community-selection" className="new-requirement">Community: </label>
-                    <LoadCommunities communities={communities} set_Community={set_Community} community={community}/>
+                    <LoadCommunities communities={communities} set_Community={set_Community} community={community} currentUser={currentUser}/>
                 </div>
                 <div id="new-post-title-container">
                     <label htmlFor="post-title-input" id="new-post-title-label" className="new-requirement">Post title: </label>
@@ -291,7 +282,7 @@ Needed (get): communities, linkFlairs, posts
                     <button id="new-post-submit-button" className="button" onClick={validate_input}>Submit Post</button>
                 </span>
             </div>
-        </div>
+        </div>)
 
     
   )
@@ -302,11 +293,11 @@ Needed (get): communities, linkFlairs, posts
 
 function LoadCommunities(props) // props will be used for: communities, set_Community, community
 {
-    const username = props.currentUser?.displayName || "";
+    const username = props.currentUser;
     const formatted_Communities = [];
     formatted_Communities.push(<option key={"N/A"} value="N/A">Select a community</option>);
 
-    const communities = userCommunityOrdered(props.communities, username) //NEW CODE
+    const communities = userCommunityOrdered(props.communities, username.id)//NEW CODE
     communities.forEach((cmt) => 
     {
         formatted_Communities.push(<option value={cmt._id} key={cmt._id}> {cmt.name}</option>);
