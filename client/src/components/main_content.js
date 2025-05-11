@@ -13,6 +13,7 @@ import ProfilePage from './profile_page.js';
 import WelcomePage from './WelcomePage.js';
 import LoginPage from './login_page.js'
 import axios from 'axios';
+import EditPostPage from './edit_post_page.js';
 
 //const model = new Model();
 
@@ -117,12 +118,25 @@ export default function Main_Content()
                  changePage={setPage} 
                  comments={commentsArr} 
                  communities={communitiesArr} 
-                 linkFlairs={linkFlairsArr} /> //removed changeComments={setCommentsArr}
+                 linkFlairs={linkFlairsArr} 
+                 username={currentUser}
+                 /> //removed changeComments={setCommentsArr}
+
                  );
             case "Create-Comment-Page-Post":
             case "Create-Comment-Page-Comment":
                 return(
-                    <NewCommentPage view={view} changeView={setView} /*return to post page*/ page={page} /*id of parent reply content*/ changePage={setPage} posts={postsArr} changePosts={setPostsArr} comments={commentsArr} changeComments={setCommentsArr} />
+                    <NewCommentPage 
+                    view={view} 
+                    changeView={setView} /*return to post page*/ 
+                    page={page} /*id of parent reply content*/ 
+                    changePage={setPage} 
+                    posts={postsArr} 
+                    changePosts={setPostsArr} 
+                    comments={commentsArr} 
+                    changeComments={setCommentsArr} 
+                    currentUser={currentUser}
+                    />
                 ); 
             case "Create-Post-Page":
                 return <NewPostPage 
@@ -215,7 +229,11 @@ export default function Main_Content()
                 )
             case "Profile-Page":
                 return(
-                    <ProfilePage view={view} setView={setView} currentUser={currentUser}/>
+                    <ProfilePage view={view} setView={setView} setPage={setPage} currentUser={currentUser}/>
+                )
+            case "Edit-Post-Page":
+                return(
+                    <EditPostPage view={view} setView={setView} page={page} currentUser={currentUser} />
                 )
             default:
                 alert("AHHHHH");

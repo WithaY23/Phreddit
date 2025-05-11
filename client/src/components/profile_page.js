@@ -7,6 +7,7 @@ import axios from 'axios';
 export default function ProfilePage(props){
     const view = props.view;
     const setView = props.setView;
+    const setPage =  props.setPage;
     const user = props.currentUser;
 
     const [communitiesArr,setCommunitiesArr] = useState([]);
@@ -73,7 +74,8 @@ export default function ProfilePage(props){
                     <div key={post._id}>
                         <button className="post-title-btn" 
                             onClick={() => {
-                                setView("Create-Post-Page");
+                                setView("Edit-Post-Page");
+                                setPage(post._id)
                             }}>{post.title}
                         </button>
                         <button className="delete-btn" 
