@@ -51,23 +51,17 @@ export default function timeConverter(original_Date)
   
 }
 
-export async function userCommunityOrdered(communities = "",user)
+export function userCommunityOrdered(communities = "",user) //expecting objects of communities and userID
 {
-  if (communities = "")
+  if (communities === "") //get communities and order them
   {
-    communities = (await axios.get("http://localhost:8000/communities/")).data //get communities
-  }
-
-
-  // const userJoinedCommunities = []
-
-  
-  //check user communities against actual communities, return list with user communities upfront
-  const orderedCommunities = communities.toSorted((cmty1, cmty2) =>
+      axios.get("http://localhost:8000/communities/").then((res) =>{
+        communities = res;
+    const orderedCommunities = communities.toSorted((cmty1, cmty2) =>
     {
-      if(cmty1.members.contains(user)) //need to rework database to populate members
+      if(cmty1.members.findOne((member) => member._id === user)) //need to rework database to populate members
       {
-        if(cmty2.members.contains(user))
+        if(cmty2.members.findOne((member) => member._id === user))
         {
           return new Date(cmty2.startDate) - new Date(cmty1.startDate)
         }
@@ -76,7 +70,38 @@ export async function userCommunityOrdered(communities = "",user)
           return -1;
         }
       }
-      else if(cmty2.members.contains(user))
+      else if(cmty2.members.findOne((member) => member._id === user))
+      {
+        return 1;
+      }
+      else
+      {
+        return new Date(cmty2.startDate) - new Date(cmty1.startDate)
+      }
+    })
+    return orderedCommunities
+      }).catch((err) =>
+    {
+      console.error("Failed to get communities", err);
+    }) 
+  }
+  else
+  {
+    //check user communities against actual communities, return list with user communities upfront
+  const orderedCommunities = communities.toSorted((cmty1, cmty2) =>
+    {
+      if(cmty1.members.includes(user)) //need to rework database to populate members
+      {
+        if(cmty2.members.includes(user))
+        {
+          return new Date(cmty2.startDate) - new Date(cmty1.startDate)
+        }
+        else
+        {
+          return -1;
+        }
+      }
+      else if(cmty2.members.includes(user))
       {
         return 1;
       }
@@ -86,4 +111,12 @@ export async function userCommunityOrdered(communities = "",user)
       }
     })
   return orderedCommunities
+
+  }
+
+
+  // const userJoinedCommunities = []
+
+  
+  
 }
