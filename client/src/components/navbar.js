@@ -40,14 +40,13 @@ function Communities(props)
 {
   const view = props.view;
   const page = props.page ? props.page : "";
-  const loggedin = props.loggedin;
-  const username=  props.username;
+  const currentUser=  props.currentUser;
   const setView = props.setView;
   const setPage = props.setPage;
 
   function CreateCommunityButton() // Make a phreddit color when selected
   {
-    return (username ?
+    return (currentUser ?
     
     
     ((view === "Create-Community-Page") ? 
@@ -72,10 +71,10 @@ function Communities(props)
     const communities = [];
 
     //Sort by user's most recent join date if logged in
-    if(loggedin)
+    if(currentUser)
     {
       //make an axios request to get the user data
-     originalCommunities = userCommunityOrdered(originalCommunities, username);
+     originalCommunities = userCommunityOrdered(originalCommunities, currentUser.id);
     }
     
     props.communities.forEach(community => 
@@ -107,7 +106,7 @@ function Communities(props)
       <p id="community-text">Communities</p>
           <CreateCommunityButton />
         <div className="display-communities">
-          <CommmunityList view={view} page={page} setView={setView} setPage={setPage} communities={props.communities}/>
+          <CommmunityList view={view} page={page} setView={setView} setPage={setPage} communities={props.communities} currentUser={currentUser}/>
         </div>
     </div>
     )
@@ -155,19 +154,24 @@ export default function NavBar(props)
   const [loading, setLoading] = useState(false);
 
   // NEW CODE
-  let loggedin = false, username = ""; 
+  const currentUser = props.currentUser ? props.currentUser: "";
 
 
 
   useEffect(() =>
     {
-      axios.get('http://localhost:8000/communities/').then((res) =>
-        {
-          setCommunities(res.data)
-          setLoading(true);
-        }).catch((err) =>{
-          console.log("Error in navbar communities: ", err)
-        })
+    const fetchData = async () => {
+    try {
+      const com = (await axios.get('http://localhost:8000/communities/')).data;
+      
+        setCommunities(com);
+        setLoading(true);
+    } catch (err) {
+      console.error("Error in navbar communities: ", err);
+    }
+  };
+  fetchData();
+
   }, [view])
   
 
@@ -187,8 +191,7 @@ export default function NavBar(props)
         communities={communities} 
         setView={setView}
         setPage={setPage}
-        username={username}
-        loggedin={loggedin}
+        currentUser={currentUser}
       />
       </>
       :
