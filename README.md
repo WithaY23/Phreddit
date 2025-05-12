@@ -4,7 +4,7 @@
 Add design docs in *images/*
 
 ## Instructions to setup and run project
-```bash
+```
 set up server:
 cd server
 npm install express
