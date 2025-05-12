@@ -69,8 +69,8 @@ app.get("/users/session", (req, res) => {   //route for session
 });
 
 app.get("/", function (req, res) {
-    console.log("Get request received at '/'");
-    res.send("Hello Phreddit!");
+    console.log("Get request received at /");
+    res.send("Hello Phreddit! Get request received at localhost:8000");
 });
 
 //sending data to client
@@ -330,6 +330,7 @@ app.post("/comments/editcomment", async(req,res) =>
     try
     {
         const comment = req.body.comment;
+        console.log(comment);
         const newComment=  await Comment.findByIdAndUpdate(comment.commentID,{
             content: comment.content,
             commentIDs: comment.commentIDs, 
@@ -717,6 +718,20 @@ app.get("/users/:userID/reputation", async (req,res) => {
     }
 })
 
+// app.get("/test/", async (req,res) =>
+// {
+//     try
+//     {
+//    const comment =  await Comment.findById('6821e715d7aa0c4824c0ba9e');
+//    res.status(200).json(comment);
+//     }
+//     catch(err)
+//     {
+//         res.status(500).send("fail to get comment");
+//     }
+
+// })
+
 
 // Try to find user email and password
 // app.post("/users/login/:emailAddress/:password", async (req,res) => {
@@ -794,6 +809,8 @@ app.delete("/comments/:commentID", async (req,res) => {   //delete comment
     try{
         const commentID = req.params.commentID;
         await delete_comment_and_replies(commentID);
+        //find if comment replied to another comment, remove it from parent's commentIDs
+        await Comment.findOneAndUpdate({commentIDs: commentID}, {$pull: {commentIDs: commentID}});
 
         res.status(200).json({success: "comment deleted"});
     }
@@ -860,11 +877,13 @@ async function delete_comment_and_replies(commentID){
         if (!comment) return;
 
         for(const reply of comment.commentIDs){ //all replies
+            console.log("Replies in serverside", reply);
             await delete_comment_and_replies(reply);
         }
         if(comment.postID){
             await Post.updateOne({_id:comment.postID},{$pull:{commentIDs:commentID}});
         }
+
 
         await Comment.findByIdAndDelete(commentID); //deletion
     }
