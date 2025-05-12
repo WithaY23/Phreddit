@@ -53,7 +53,10 @@ node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPa
 - The Post Page view  
 - The New Post Page view  
 - The New Comment Page view 
--Communities schema
+-Communities, Comments, Linkflair schema
 -Communities, Linkflairs constraints
 -general server update requests
--server linkflair requests
+-Hashing
+-Comment, Community, linkflair schema
+-Sample data in init.js
+-State diagram
