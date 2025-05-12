@@ -151,8 +151,9 @@ app.post('/communities', async (req, res) => {
         const save_community = await new_community.save(); //generate _id for MongoDB, save() saves to model 'Community'
         res.status(201).json(save_community);
     }
-    catch{
-        console.error("Failed to create community!!!!");
+    catch(err){
+        console.error("Failed to create community!!!!", err);
+        res.status(500).json({error: "Failed to create community", details: err.message});
     }
 })
 
@@ -160,7 +161,7 @@ app.get("/community/:communityID", async (req,res) =>{
     try{
         const comID = req.params['communityID'];
         //const community= await Community.find({url: 'communities/' + comID}).populate('postIDs').exec() // WILL NEED TO REMOVE .communityID IN SRC and replace with .url, remove 'communities/' prefix here and elsewhere
-        const community = await Community.findById(comID).populate('postIDs');
+        const community = await Community.findById(comID).populate('postIDs').populate('createdBy');
         res.status(200).json(community)
     }
     catch(err){
@@ -346,6 +347,54 @@ app.post("/comments/editcomment", async(req,res) =>
     }
     
 })
+app.put("/communities/:communityID", async (req, res) => {  //for updating community
+    try{
+        const communityID = req.params.communityID;
+        const updatedCommunity = await Community.findByIdAndUpdate(communityID,
+            {
+                name: req.body.name,
+                description: req.body.description
+            },{new: true, runValidators: true}
+        );
+        if(!updatedCommunity){
+            return res.status(404).json({ error: "Community not found" });
+        }
+
+        res.status(200).json(updatedCommunity);
+    } 
+    catch(err){
+        console.error("Error updating community:", err);
+        res.status(500).json({error: "Failed to update community"});
+    }
+});
+app.put('/communities/:id/join', async (req, res) => { //join community
+    const {userID} = req.body;
+    try{
+        const updated = await Community.findByIdAndUpdate(
+            req.params.id,
+            {$addToSet: {members: userID}}, //avoid duplicates
+            {new: true}
+        );
+        res.json(updated);
+    } 
+    catch(err){
+        res.status(500).json({ error: "Failed to join community"});
+    }
+});
+app.put('/communities/:id/leave', async (req, res) => { //leav community
+    const {userID} = req.body;
+    try{
+        const updated = await Community.findByIdAndUpdate(
+            req.params.id,
+            {$pull:{members: userID}}, //remove userID
+            {new: true}
+        );
+        res.json(updated);
+    }
+    catch(err){
+        res.status(500).json({ error: "Failed to leave community"});
+    }
+});
 
 
 //app.get: express http GET POST PUT DELETE| request to posts
@@ -718,6 +767,7 @@ app.post("/users/login", async (req, res) =>{
             displayName: user.displayName,
             isAdmin: user.isAdmin,
             email: user.email,
+            createdDate: user.createdDate,
         }
 
         return res.status(200).send(req.session.user); //send user back

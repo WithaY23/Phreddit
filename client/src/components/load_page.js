@@ -16,6 +16,7 @@ export default function LoadPage(props){
     const searchTerms = props.searchTerms;
     const setXposts = props.setXposts;
     const sortType = props.sortType;
+    const currentUser = props.currentUser;
 
     //returning siblings with a wrapper
     return(
@@ -27,7 +28,8 @@ export default function LoadPage(props){
                 setPage={setPage}
                 searchTerms={searchTerms} 
                 setXposts={setXposts} 
-                sortType={sortType}/>
+                sortType={sortType}
+                currentUser={currentUser}/>
         </>
     )
 }
@@ -42,6 +44,7 @@ function PostList(props){
     const page = props.page;
     const setXposts = props.setXposts;
     const sortType = props.sortType;
+    const currentUser = props.currentUser;
 
     //get membercount if it is on community page
     const memberCount = (view === "Community-Page" && page) ? page.memberCount : null;
@@ -104,6 +107,7 @@ function PostList(props){
                 linkflair,
                 postedDate: posted_date,
                 activeDate: active_date,
+                voteCount: post.voteCount,
             };
         }
 
@@ -222,7 +226,7 @@ function PostList(props){
                             {addHyperlinks(post.content)}
                         </div>
                         <div id="post-viewcount-line">
-                            Views: {post.viewcount} | Comments: {post.commentcount}
+                            Views: {post.viewcount} | Comments: {post.commentcount} | Likes: {post.voteCount}
                         </div>
                     </div>
                 ))}
