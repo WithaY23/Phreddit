@@ -183,8 +183,24 @@ app.get("/comments", async (req, res) => {
 });
 
 //need updating
-app.get("/comments/:commentID", async (req,res) => {
-    res.status(200).json(Comment.find({commentID: req.params['commentID']}).exec());
+app.get("/comments/:commentID", async (req,res) => 
+{
+    try
+    {
+    const comments = await (Comment.find({_id: req.params['commentID']}).exec());
+    if (comments === undefined || comments.length ===0)
+    {
+        res.status(404).json({error: "Could not find comment with commentID"})
+    }
+    const comment= comments[0];
+    res.status(200).json(comment);
+    }
+    catch(err)
+    {
+        console.error("Error getting comment", err)
+        res.status(500).json({error: "Error getting comment"})
+    }
+    
 });
 
 //case for loading Post page, need comments as well
@@ -309,6 +325,28 @@ app.post("/comments/updateCommentVote/:newVote", async(req,res) =>{
 
 })
 
+app.post("/comments/editcomment", async(req,res) =>
+{
+    try
+    {
+        const comment = req.body.comment;
+        const newComment=  await Comment.findByIdAndUpdate(comment.commentID,{
+            content: comment.content,
+            commentIDs: comment.commentIDs, 
+            commentedBy: comment.commentedBy,
+            commentedDate: comment.commentedDate,
+            voteUp: comment.voteUp,
+            voteDown: comment.voteDown,
+            postID: comment.postID
+        }, {new: true})
+        res.status(200).json(newComment);
+    }
+    catch(err)
+    {
+        console.error("Error editting comment", err);
+    }
+    
+})
 app.put("/communities/:communityID", async (req, res) => {  //for updating community
     try{
         const communityID = req.params.communityID;
@@ -533,6 +571,7 @@ app.post("/posts/updatePostVote/:newVote", async(req,res) =>{
 })
 app.post("/posts/update/editpost", async (req,res) =>{
     const post = req.body['post'];
+    console.log(post);
     try{
 if(post.hasOwnProperty("linkFlairID"))
     {
@@ -553,7 +592,8 @@ if(post.hasOwnProperty("linkFlairID"))
     else
     {
         const newPost = await Post.findByIdAndUpdate(post.postID, 
-            {_id: post.postID, 
+            {$unset: {"linkFlairID":""},
+            $set: {_id: post.postID, 
             title: post.title, 
             content: post.content, 
             postedBy: post.postedBy,
@@ -562,7 +602,7 @@ if(post.hasOwnProperty("linkFlairID"))
             views: post.views,
             voteUp: post.voteUp,
             voteDown: post.voteDown
-        }, {new: true})
+        }}, {new: true} )
 
         res.status(200).json({post: newPost, success: "Updating post is a success"});
     }

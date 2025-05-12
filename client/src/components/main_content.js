@@ -14,7 +14,6 @@ import WelcomePage from './WelcomePage.js';
 import LoginPage from './login_page.js'
 import axios from 'axios';
 import EditPostPage from './edit_post_page.js';
-import EditCommunityPage from './edit_community_page.js'
 
 //const model = new Model();
 
@@ -242,6 +241,10 @@ export default function Main_Content()
             case "Edit-Community-Page":
                 return(
                     <EditCommunityPage view={view} setView={setView} page={page} currentUser={currentUser} />
+                )
+            case "Edit-Comment-Page":
+                return(
+                    <EditCommentPage view={view} setView={setView} page={page} currentUser={currentUser} />
                 )
             default:
                 alert("AHHHHH");

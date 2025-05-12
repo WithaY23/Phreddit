@@ -180,7 +180,8 @@ export default function ProfilePage(props){
                     <div key={comment._id}>
                         <button className="post-title-btn" 
                             onClick={() => {
-                                setView("Create-Comment-Page");
+                                setView("Edit-Comment-Page");
+                                setPage(comment._id);
                             }}>{comment.content.substring(0, 20)}...
                         </button>
                         <button className="delete-btn" 
