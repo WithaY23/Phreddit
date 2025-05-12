@@ -6,7 +6,6 @@ import '../stylesheets/login_page.css';
 export default function RegisterPage(props) {
     const setView = props.setView;
     const setPage = props.setPage;
-    const setCurrentUser = props.setCurrentUser;
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");

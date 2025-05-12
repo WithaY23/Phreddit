@@ -10,6 +10,7 @@ export default function ProfilePage(props){
     const setPage =  props.setPage;
     const user = props.currentUser;
     const isAdmin = user.isAdmin;
+  
 
     const [communitiesArr,setCommunitiesArr] = useState([]);
     const [reputation, setReputation] = useState(0);
@@ -17,11 +18,18 @@ export default function ProfilePage(props){
     const [commentsArr,setCommentsArr] = useState([]);
     const [selected, setSelected] = useState("Posts");
     const [usersArr, setUsersArr] = useState([]);
+    
+    const [viewingUser, setViewingUser] = useState(user);  
+    useEffect(() => {
+        //make the logged-in user to always have _id
+        setViewingUser(prev => ({ ...prev, _id: prev._id ?? prev.id }));
+      }, []);
+    const isViewingAdmin = viewingUser.isAdmin;
 
     useEffect(() => 
     {
         const get_data = async () =>{
-            try {
+            try{
                 const comms = await axios.get("http://localhost:8000/communities/");
                 const posts = await axios.get("http://localhost:8000/posts/");
                 const comments = await axios.get("http://localhost:8000/comments/");
@@ -33,7 +41,8 @@ export default function ProfilePage(props){
                 setCommentsArr(comments.data);
                 setReputation(rep.data.reputation);  
 
-            } catch (err) {
+            } 
+            catch(err){
                 console.error("Error fetching data:", err);
                 setView("Error-Page")
                 setPage(err)
@@ -42,6 +51,14 @@ export default function ProfilePage(props){
 
         get_data();
     }, [view]);
+
+    useEffect(() => {
+        if(isAdmin && selected === "Users" && usersArr.length === 0){
+            axios.get("http://localhost:8000/users/")
+                .then(res => setUsersArr(res.data))
+                .catch(err => console.error("Failed to load users", err));
+        }
+    }, [selected, isAdmin]);
 
 
     async function delete_post(postID){ //delete post request
@@ -67,7 +84,8 @@ export default function ProfilePage(props){
     function user_posts(){   //to return all user's posts
         const user_posts = postsArr.filter(post => {
             const postedBy = typeof post.postedBy === 'string' ? post.postedBy : post.postedBy._id; //if populated, it will be string Name
-            return postedBy === user.id;
+            console.log("Comparing postedBy:", postedBy, "with viewingUser._id:", viewingUser._id);
+            return postedBy === viewingUser._id;
         });
         
         if(user_posts.length === 0){
@@ -125,7 +143,7 @@ export default function ProfilePage(props){
         const user_communities = communitiesArr.filter(community => {
             //if populated, it will be string Name
             const createdBy = typeof community.createdBy === 'string' ? community.createdBy : community.createdBy._id; 
-            return createdBy === user.id;
+            return createdBy === viewingUser._id;
         });
         
         if(user_communities.length === 0){
@@ -175,7 +193,7 @@ export default function ProfilePage(props){
         const user_comments = commentsArr.filter(comments => {
             //if populated, it will be string Name
             const commentedBy = typeof comments.commentedBy === 'string' ? comments.commentedBy : comments.commentedBy._id; 
-            return commentedBy === user.id;
+            return commentedBy === viewingUser._id;
         });
         
         if(user_comments.length === 0){
@@ -226,22 +244,23 @@ export default function ProfilePage(props){
     }
 
     function phreddit_users(){ //for users
-        if(usersArr.length === 0){
-            axios.get("http://localhost:8000/users/")
-                .then(res => setUsersArr(res.data))
-                .catch(err => console.error("Failed to load users", err));
-            return <p>Loading users...</p>;
-        }
-    
         return (
             <div className="user-list">
                 {usersArr.map(u => (
                     <div key={u._id}>
                         <button className="post-title-btn"
-                            onClick={() => {
-                                setPage(u._id); //for reference to edit user
-                                setView("Profile-Page");
-                            }}>
+                            onClick={async () => {
+                                try {
+                                    const res = await axios.get(`http://localhost:8000/users/${u._id}/info`);
+                                    setViewingUser(res.data);        //update what we show
+                                    setReputation(res.data.reputation)
+                                    setSelected("Posts");            //switch to post view
+                                    setPage(u._id);                  //store reference
+                                } 
+                                catch(err){
+                                    console.error("Failed to load user summary", err);
+                                }
+                                }}>
                             {u.displayName} | {u.email} | {u.reputation}
                         </button>
                         <button className="delete-btn" 
@@ -273,10 +292,10 @@ export default function ProfilePage(props){
             <h1>User Profile</h1>
             <div className="profile-info">
                 <div className="row">
-                    <span className="label">Username: </span><span className="value">{user.displayName}</span>
+                    <span className="label">Username: </span><span className="value">{viewingUser.displayName}</span>
                 </div>
                 <div className="row">
-                    <span className="label">Email:</span><span className="value">{user.email}</span>
+                    <span className="label">Email:</span><span className="value">{viewingUser.email}</span>
                 </div>
                 <div className="row">
                     <span className="label">Reputation:</span><span className="value">{reputation}</span>
@@ -284,7 +303,7 @@ export default function ProfilePage(props){
                 <div className="row">
                     <span className="label">Member since:</span>
                     <span className="value">
-                        {user.createdDate ? formatDate(user.createdDate) : "Unknown"}
+                        {viewingUser.createdDate ? formatDate(viewingUser.createdDate) : "Unknown"}
                     </span>
                 </div>
             </div>
@@ -299,11 +318,29 @@ export default function ProfilePage(props){
                 <button className={`section-btn ${selected === "Comments" ? "active" : ""}`} id="comments-btn"
                         onClick={() => setSelected("Comments")}>Comments</button>
 
-                {isAdmin && (
+                {isViewingAdmin && (
                     <button className={`section-btn ${selected === "Users" ? "active" : ""}`} id="users-btn"
                         onClick={() => setSelected("Users")}>Users</button>
                 )}
+
+                {isAdmin && viewingUser.displayName !== user.displayName && (
+                <button onClick={async () => {
+                    try{
+                        const res = await axios.get(`http://localhost:8000/users/${user.id}/info`); //refetch info
+                        setViewingUser(res.data);
+                        setReputation(res.data.reputation);
+                        setSelected("Users");
+                        setPage(user.id);
+                    } 
+                    catch(err){
+                        console.error("Failed to reload admin info", err);
+                    }
+                }}>Back to My Profile</button>
+                )}
+
             </div>
+            
+            
 
             <div className="content-container">
                 {selected === "Posts" && user_posts()}

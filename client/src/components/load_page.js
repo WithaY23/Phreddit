@@ -41,7 +41,9 @@ function PostList(props){
     const [linkFlairs, setLinkFlairs] = useState([]);
 
     const view = props.view;
+    const setView = props.setView;
     const page = props.page;
+    const setPage = props.setPage;
     const setXposts = props.setXposts;
     const sortType = props.sortType;
     const currentUser = props.currentUser;
@@ -55,7 +57,7 @@ function PostList(props){
 
     useEffect(() => {
         async function fetchData(){
-            try {
+            try{
                 const [p, c, cm, lf] = await Promise.all([
                     axios.get("http://localhost:8000/posts"),
                     axios.get("http://localhost:8000/comments"),
@@ -67,8 +69,10 @@ function PostList(props){
                 setComments(c.data);
                 setCommunities(cm.data);
                 setLinkFlairs(lf.data);
-            } catch (err) {
-                console.error("Error fetching post data:", err);
+            } 
+            catch(err){
+                setView("Error-Page") //ERROR ADDED
+                setPage(err);
             }
         }
         fetchData();
@@ -201,7 +205,8 @@ function PostList(props){
                         }
                         catch(err)
                         {
-                            console.error("Error viewing post page");
+                            setView("Error-Page") //ERROR ADDED
+                            setPage(err);
                         }
 
                         //FINICKY CODE, relies on recreating shallow instances

@@ -5,6 +5,7 @@ import axios from "axios";
 export default function EditCommunity(props){
     const setCommunities = props.setCommunities;
     const setView = props.setView;
+    const setPage = props.setPage;
     const communityID = props.page;  //community id
     const currentUser = props.currentUser;
 
@@ -20,7 +21,8 @@ export default function EditCommunity(props){
                 const res = await axios.get(`http://localhost:8000/community/${communityID}`);
                 setName(res.data.name);
                 setDescription(res.data.description);
-            }catch (err) {
+            }
+            catch(err){
                 console.error("Failed to load community info", err);
             }
         }
@@ -79,8 +81,8 @@ export default function EditCommunity(props){
             setView("Profile-Page");  // Go back to profile or wherever you want
         } 
         catch(err){
-            console.error("Failed to update community:", err);
-            alert("Failed to update community.");
+            setView("Error-Page") //ERROR ADDED
+            setPage(err);
         }
     }
 
@@ -91,8 +93,8 @@ export default function EditCommunity(props){
             setView("Profile-Page");  //after this, ProfilePage will fetch fresh data
         } 
         catch(err){
-            console.error("Failed to delete community:", err);
-            alert("Failed to delete community.");
+            setView("Error-Page") //ERROR ADDED
+            setPage(err);
         }
     }
 
