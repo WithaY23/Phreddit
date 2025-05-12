@@ -108,6 +108,9 @@ export default function New_Comment_Page(props)
                     catch(err)
                     {
                         console.error("Error updating post comments: ", err)
+                        props.changeView("Error-Page");
+                        props.changePage(err)
+
                     }
                     
                 }
@@ -133,6 +136,9 @@ export default function New_Comment_Page(props)
                     catch(err)
                     {
                         console.error("Error updating comment subcomments: ", err)
+                        props.changeView("Error-Page");
+                        props.changePage(err)
+
                     }
         
                     const post = find_comment_post(ID, comments, posts);
@@ -149,6 +155,8 @@ export default function New_Comment_Page(props)
             catch(err)
             {
                 console.error("Error creating a new comment:", err);
+                props.changeView("Error-Page");
+                props.changePost(err)
             }
     
             
@@ -171,6 +179,9 @@ export default function New_Comment_Page(props)
         catch(err)
         {
             console.log("Error getting data for New comment page ", err)
+            props.changeView("Error-Page");
+            props.changePage(err)
+
         }
 
 

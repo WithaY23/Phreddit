@@ -17,6 +17,8 @@ export default function New_Post_Page(props)
 
 
     const currentUser = props.currentUser;
+    const setView=  props.setView;
+    const setPage= props.setPage;
     
     const fetchData = async () =>
         {
@@ -139,6 +141,8 @@ export default function New_Post_Page(props)
                 catch(err)
                 {
                     console.log("posting post error: ", err)
+                    setView("Error-Page")
+                    setPage(err);
                 }
 
                 //post linkflair, if created, first. Then create and post the post, then update the community 
@@ -197,6 +201,8 @@ export default function New_Post_Page(props)
                 catch(err)
                 {
                     console.error("Failed to update data in creating new linkflair: ", err);
+                    setView("Error-Page")
+                    setPage(err);
                 }
                 
                 
@@ -221,6 +227,8 @@ export default function New_Post_Page(props)
                 catch(err)
                 {
                     console.error("Error getting linkflair in new post page: " , err);
+                    setView("Error-Page")
+                    setPage(err);
                 }
             }
 
@@ -230,6 +238,8 @@ export default function New_Post_Page(props)
             catch(err)
             {
                 console.error("Error refreshing data in new post page: ", err);
+                setView("Error-Page")
+                setPage(err);
             }
 
         

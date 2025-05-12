@@ -5,6 +5,7 @@ import '../stylesheets/login_page.css';
 
 export default function LoginPage(props) {
     const setView = props.setView;
+    const setPage= props.setPage;
     const setCurrentUser = props.setCurrentUser;
 
     const [email_entered, setEmail] = useState("");
@@ -48,6 +49,8 @@ export default function LoginPage(props) {
             }
             else{
                 setFeedback("server error");
+                setView("Error-Page");
+                setPage(error)     //Error page
             }
         }
     }
