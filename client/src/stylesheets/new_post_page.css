@@ -62,15 +62,23 @@
 #new-post-submit-container{
     margin-top:10px;
     display:grid;
-    grid-template-columns: 5fr 4fr 3fr;
+    grid-template-columns: 6fr 1fr 1fr 3fr;
 }
 
-#new-post-username-container{
+/* #new-post-username-container{
     display:inline-block;
     grid-column: 1;
-}
+} */
 #new-post-submit-button{
-    grid-column:3;
+    grid-column:2;
     width:120px;
+    margin: 0px 10px;
 }
+#delete-button{
+    grid-column: 3;
+    width:120px;
+
+}
+
+
 

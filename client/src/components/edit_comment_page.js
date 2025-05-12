@@ -90,19 +90,32 @@ export default function Edit_Comment_Page(props)
             // const posts = (await axios.get('http://localhost:8000/posts')).data;
             
 
-            const comment = 
+            const comment = originalComment.hasOwnProperty("postID") ? 
             {
                 commentID: originalCommentID,
                 content: textbox,
-                commentIDs: [],
+                commentIDs: originalComment.commentIDs,
                 commentedBy: currentUser.id,
                 commentedDate: originalComment.commentedDate,
+                voteUp: originalComment.voteUp,
+                voteDown: originalComment.voteDown,
+                postID: originalComment.postID
+            }
+            :
+            {
+                commentID: originalCommentID,
+                content: textbox,
+                commentIDs: originalComment.commentIDs,
+                commentedBy: currentUser.id,
+                commentedDate: originalComment.commentedDate,
+                voteUp: originalComment.voteUp,
+                voteDown: originalComment.voteDown,
             }
     
             try
             {
                 //update database with post
-                const newComment = (await axios.post("http://localhost:8000/comments/editcomment", comment)).data;
+                const newComment = (await axios.post("http://localhost:8000/comments/editcomment", {comment: comment})).data;
                 setView("Profile-Page");
             }
             catch(err)
@@ -181,7 +194,7 @@ return loading ? <p>Loading</p> :(
             </div>
             <span id="new-comment-submit-container">
                     <button id="new-comment-submit-button" className="button" onClick={validate_input}>Submit Comment</button>
-                    <button onClick={async() =>{if(window.confirm("Are you sure you want to delete this comment") === true){await delete_comment(originalCommentID); setView("Profile-Page")}}  }className="button">Delete Comment</button>
+                    <button id="new-comment-delete-button" onClick={async() =>{if(window.confirm("Are you sure you want to delete this comment") === true){await delete_comment(originalCommentID); setView("Profile-Page")}}  }className="button">Delete Comment</button>
             </span>
         </div>
     </div>
