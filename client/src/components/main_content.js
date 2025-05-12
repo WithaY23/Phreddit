@@ -17,6 +17,7 @@ import EditPostPage from './edit_post_page.js';
 import EditCommunityPage from './edit_community_page.js';
 import EditCommentPage from './edit_comment_page.js';
 import ErrorPage from './errorpage.js';
+import RegisterPage from './register_page.js'
 
 //const model = new Model();
 
@@ -42,7 +43,7 @@ export default function Main_Content()
     //load before doing anything
     const [loading, setLoading] = useState(true);
 
-    const noBannerPages = ["Welcome-Page", "Login-Page", "Error-Page"];
+    const noBannerPages = ["Welcome-Page", "Login-Page", "Error-Page", "Register-Page"];
 
     useEffect(() => {
         axios.get("http://localhost:8000/users/session", { withCredentials: true })
@@ -160,6 +161,7 @@ export default function Main_Content()
                         <AllPostLine 
                             view={view} 
                             page={page} 
+                            setPage={setPage}
                             xposts={xposts}
                             searchTerms={searchTerms}
                             sortType={sortType}       
@@ -232,7 +234,11 @@ export default function Main_Content()
                 )
             case "Login-Page":
                 return(
-                    <LoginPage view={view} setView={setView} setPage ={setPage}setCurrentUser={setCurrentUser}/>
+                    <LoginPage view={view} setView={setView} setPage ={setPage} setCurrentUser={setCurrentUser}/>
+                )
+            case "Register-Page":
+                return(
+                    <RegisterPage view={view} setView={setView} setPage={setPage} setCurrentUser={setCurrentUser}/>
                 )
             case "Profile-Page":
                 return(
