@@ -4,6 +4,7 @@
 Add design docs in *images/*
 
 ## Instructions to setup and run project
+```bash
 set up server:
 cd server
 npm install express
@@ -32,7 +33,7 @@ To initialize data run:
 node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPassword
 To reset data run:
 node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPassword -reset
-
+```
 
 ## Yucan Contribution
 <yucan>
