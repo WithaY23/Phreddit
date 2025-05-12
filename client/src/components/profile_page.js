@@ -35,6 +35,8 @@ export default function ProfilePage(props){
 
             } catch (err) {
                 console.error("Error fetching data:", err);
+                setView("Error-Page")
+                setPage(err)
             }
         };
 
@@ -57,6 +59,8 @@ export default function ProfilePage(props){
         }
         catch(err){
             console.log("fail to delete post.",err);
+            setView("Error-Page")
+            setPage(err)
         }
     }
 
@@ -112,6 +116,8 @@ export default function ProfilePage(props){
         }
         catch(err){
             console.log("fail to delete community.",err);
+            setView("Error-Page");
+            setPage(err)
         }
     }
 
@@ -160,6 +166,8 @@ export default function ProfilePage(props){
         }
         catch(err){
             console.log("fail to delete comment.",err);
+            setView("Error-Page");
+            setPage(err)
         }
     }
 
@@ -212,6 +220,8 @@ export default function ProfilePage(props){
         }
         catch(err){
             console.log("fail to delete user.",err);
+            setView("Error-Page")
+            setPage(err);
         }
     }
 

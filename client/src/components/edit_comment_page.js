@@ -19,6 +19,7 @@ export default function Edit_Comment_Page(props)
     const originalCommentID = props.page;
     const currentUser= props.currentUser;
     const setView= props.setView;
+    const setPage = props.setPage;
 
     useEffect(() => {
         const fetchData = async function()
@@ -121,6 +122,8 @@ export default function Edit_Comment_Page(props)
             catch(err)
             {
                 console.error("Error editing a comment:", err);
+                setView("Error-Page");
+                setPage(err)
             }
     
             
@@ -132,6 +135,7 @@ export default function Edit_Comment_Page(props)
             console.log("Error getting data for New comment page ", err)
         }
 
+    
 
     function find_comment_post(commentID, comments, posts) //find the post to which a comment belongs
     {
@@ -182,6 +186,18 @@ export default function Edit_Comment_Page(props)
         }
     }
     }
+    async function delete_comment(commentID) // to delete a comment
+    { 
+            try{
+                await axios.delete(`http://localhost:8000/comments/${commentID}`);  //send request to delete
+                console.log("deleted comment success");
+            }
+            catch(err){
+                console.log("fail to delete comment.",err);
+                setView("Error-Page");
+                setPage(err)
+            }
+    }
 return loading ? <p>Loading</p> :(
     <div className="under-main-content-header" id="posts_container">
         <div className="new-comment-container">
@@ -202,13 +218,3 @@ return loading ? <p>Loading</p> :(
     )
 }
 
-async function delete_comment(commentID) // to delete a comment
-{ 
-        try{
-            await axios.delete(`http://localhost:8000/comments/${commentID}`);  //send request to delete
-            console.log("deleted comment success");
-        }
-        catch(err){
-            console.log("fail to delete comment.",err);
-        }
-}

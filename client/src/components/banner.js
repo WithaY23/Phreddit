@@ -7,6 +7,7 @@ export default function Banner(props){
     const setCurrentUser = props.setCurrentUser;
     const view = props.view;
     const setView = props.setView;
+    const setPage = props.setPage;
     const setSearchTerms = props.setSearchTerms;
 
     //hold local input
@@ -53,6 +54,8 @@ export default function Banner(props){
                             }
                             catch(error){
                                 console.error("error logout", error);
+                                setView("Error-Page") //ERROR ADDED
+                                setPage(error);
                             }
                         }}>
                         Logout
@@ -107,6 +110,8 @@ export default function Banner(props){
                         }
                         catch(error){
                             console.error("error logout", error);
+                            setView("Error-Page") //ERROR ADDED
+                            setPage(error);
                         }
                     }}>
                     Logout

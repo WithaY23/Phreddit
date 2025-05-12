@@ -216,6 +216,8 @@ export default function Post_Page(props)
 
     const postID = props.page._id;
     const username = props.username ? props.username : "";
+    const setView = props.setView;
+    const setPage= props.setPage;
 
 
     useEffect(() =>{
@@ -243,6 +245,8 @@ export default function Post_Page(props)
             catch(err)
             {
                 console.error("Error getting data inside post page: ", err);
+                setView("Error-Page") //ERROR ADDED
+                setPage(err);
             }
         }
         getDBData();

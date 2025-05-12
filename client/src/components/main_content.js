@@ -16,6 +16,7 @@ import axios from 'axios';
 import EditPostPage from './edit_post_page.js';
 import EditCommunityPage from './edit_community_page.js';
 import EditCommentPage from './edit_comment_page.js';
+import ErrorPage from './errorpage.js';
 
 //const model = new Model();
 
@@ -41,7 +42,7 @@ export default function Main_Content()
     //load before doing anything
     const [loading, setLoading] = useState(true);
 
-    const noBannerPages = ["Welcome-Page", "Login-Page"];
+    const noBannerPages = ["Welcome-Page", "Login-Page", "Error-Page"];
 
     useEffect(() => {
         axios.get("http://localhost:8000/users/session", { withCredentials: true })
@@ -146,6 +147,7 @@ export default function Main_Content()
                     currentUser={currentUser}
                     setView={setView} 
                     view = {view}
+                    setPage={setPage}
                     communities={communitiesArr} 
                     setCommunities={setCommunitiesArr} 
                     linkFlairs={linkFlairsArr}
@@ -230,7 +232,7 @@ export default function Main_Content()
                 )
             case "Login-Page":
                 return(
-                    <LoginPage view={view} setView={setView} setCurrentUser={setCurrentUser}/>
+                    <LoginPage view={view} setView={setView} setPage ={setPage}setCurrentUser={setCurrentUser}/>
                 )
             case "Profile-Page":
                 return(
@@ -238,15 +240,19 @@ export default function Main_Content()
                 )
             case "Edit-Post-Page":
                 return(
-                    <EditPostPage view={view} setView={setView} page={page} currentUser={currentUser} />
+                    <EditPostPage view={view} setView={setView} page={page} setPage ={setPage}currentUser={currentUser} />
                 )
             case "Edit-Community-Page":
                 return(
-                    <EditCommunityPage view={view} setView={setView} page={page} currentUser={currentUser} />
+                    <EditCommunityPage view={view} setView={setView} page={page}setPage ={setPage}currentUser={currentUser} />
                 )
             case "Edit-Comment-Page":
                 return(
-                    <EditCommentPage view={view} setView={setView} page={page} currentUser={currentUser} />
+                    <EditCommentPage view={view} setView={setView} page={page}setPage ={setPage} currentUser={currentUser} />
+                )
+            case "Error-Page":
+                return(
+                    <ErrorPage setView={setView} />
                 )
             default:
                 alert("AHHHHH");
@@ -265,7 +271,7 @@ export default function Main_Content()
         <>
             {!noBannerPages.includes(view) && (
                 <>
-                    <Banner view={view} setView={setView} setSearchTerms={setSearchTerms} currentUser={currentUser} 
+                    <Banner view={view} setView={setView} setSearchTerms={setSearchTerms} currentUser={currentUser} setPage ={setPage}
                         setCurrentUser={setCurrentUser}/>
                     <div className="below-header">
                         <NavBar view={view} page={page} communities={communitiesArr} setView={setView} setPage={setPage} currentUser={currentUser}/>

@@ -18,6 +18,7 @@ export default function EditPostPage(props) //post id, user id, view, setView
     const postID = props.page;
     console.log("Post ID in edit post page", postID);
 
+    const setPage=  props.setPage
     const setView= props.setView;
 
 
@@ -229,6 +230,8 @@ export default function EditPostPage(props) //post id, user id, view, setView
                 catch(err)
                 {
                     console.error("Failed to update data in creating new linkflair: ", err);
+                    props.changeView("Error-Page");
+                    setPage(err);
                 }
                 
             }
@@ -254,7 +257,10 @@ export default function EditPostPage(props) //post id, user id, view, setView
                 }
                 catch(err)
                 {
-                    console.error("Error getting linkflair in new post page: " , err);
+                    console.error("Error getting linkflair in edit post page: " , err);
+                    props.changeView("Error-Page");
+                    setPage(err)
+
                 }
             }
 
@@ -263,7 +269,10 @@ export default function EditPostPage(props) //post id, user id, view, setView
             }
             catch(err)
             {
-                console.error("Error refreshing data in new post page: ", err);
+                console.error("Error refreshing data in edit post page: ", err);
+                props.changeView("Error-Page");
+                setPage(err)
+
             }
 
         
@@ -279,6 +288,9 @@ export default function EditPostPage(props) //post id, user id, view, setView
         }
         catch(err){
             console.log("fail to delete post.",err);
+            props.changeView("Error-Page");
+            setPage(err)
+
         }
     }
 return loading ? <p>Loading</p>: (
