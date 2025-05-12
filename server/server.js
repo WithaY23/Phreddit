@@ -748,6 +748,20 @@ app.get("/users/:userID/reputation", async (req,res) => {
     }
 })
 
+app.get("/users/:userID/info", async (req, res) => {
+    try{
+        const user = await User.findById(req.params.userID)
+            .select("displayName email reputation createdDate isAdmin"); // only include specific fields
+        if(!user){
+            return res.status(404).send("user not found");
+        }
+        res.status(200).json(user);
+    } 
+    catch{
+        res.status(500).send("fail to get user summary");
+    }
+});
+
 // app.get("/test/", async (req,res) =>
 // {
 //     try

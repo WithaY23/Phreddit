@@ -5,6 +5,7 @@ import axios from "axios";
 export default function Create_Community(props){
     const setCommunities = props.setCommunities;
     const setView = props.setView;
+    const setPage = props.setPage;
     const currentUser = props.currentUser;
 
     const [name, setName] = useState("");
@@ -80,9 +81,9 @@ export default function Create_Community(props){
                 setCommunities(prev => [...prev, res.data]); //update frontend with newest data including the newest community added
                 setView("Home-Page");})
             .catch(err => {
-                console.error("fail to create community:", err);
-                alert("fail to create community");
-        });
+                setView("Error-Page") //ERROR ADDED
+                setPage(err);
+            });
     }
 
     return (

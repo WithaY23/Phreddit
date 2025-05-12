@@ -242,7 +242,7 @@ export default function Main_Content()
                 )
             case "Profile-Page":
                 return(
-                    <ProfilePage view={view} setView={setView} setPage={setPage} currentUser={currentUser}/>
+                    <ProfilePage view={view} page={page} setView={setView} setPage={setPage} currentUser={currentUser}/>
                 )
             case "Edit-Post-Page":
                 return(
@@ -250,11 +250,11 @@ export default function Main_Content()
                 )
             case "Edit-Community-Page":
                 return(
-                    <EditCommunityPage view={view} setView={setView} page={page}setPage ={setPage}currentUser={currentUser} />
+                    <EditCommunityPage view={view} setView={setView} page={page} setPage={setPage}currentUser={currentUser} />
                 )
             case "Edit-Comment-Page":
                 return(
-                    <EditCommentPage view={view} setView={setView} page={page}setPage ={setPage} currentUser={currentUser} />
+                    <EditCommentPage view={view} setView={setView} page={page} setPage={setPage} currentUser={currentUser} />
                 )
             case "Error-Page":
                 return(
