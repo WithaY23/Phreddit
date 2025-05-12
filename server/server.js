@@ -348,6 +348,36 @@ app.post("/comments/editcomment", async(req,res) =>
     }
     
 })
+app.post("/users/register", async (req, res) => {
+    const {firstName, lastName, email, displayName, password} = req.body;
+
+    try{
+        const existingUser = await User.findOne({ email });
+        if(existingUser){
+            return res.status(400).json({ error: "Email already registered" });
+        }
+
+        const passwordHash = await encrypt(password);  //create password
+        const newUser = new User({
+            firstName,
+            lastName,
+            email,
+            displayName,
+            passwordHash,
+            isAdmin: false,
+            createdDate: new Date(),
+            reputation: 100
+        });
+        await newUser.save();  //save user
+
+        res.status(200).json({success: "register success"});
+    } 
+    catch(err){
+        console.error("Registration failed", err);
+        res.status(500).json({error: "Server error during registration"});
+    }
+});
+
 app.put("/communities/:communityID", async (req, res) => {  //for updating community
     try{
         const communityID = req.params.communityID;

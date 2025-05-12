@@ -6,6 +6,7 @@ export default function All_Post_Line(props){
     const view = props.view;
     //assume page is the community object
     const page = props.page;
+    const setPage = props.setPage;
     const xposts = props.xposts;
     const searchTerms = props.searchTerms;
     const setSortType = props.setSortType;
@@ -20,7 +21,8 @@ export default function All_Post_Line(props){
             await axios.put(`http://localhost:8000/communities/${communityID}/join`, {
                 userID: currentUser.id,
             });
-            window.location.reload(); //refreshes the view
+            const updated = await axios.get(`http://localhost:8000/community/${communityID}`);
+            setPage(updated.data); //trigger re-render with updated members list
         } 
         catch(err){
             console.error("Failed to join community:", err);
@@ -32,7 +34,8 @@ export default function All_Post_Line(props){
             await axios.put(`http://localhost:8000/communities/${communityID}/leave`, {
                 userID: currentUser.id,
             });
-            window.location.reload(); //refreshes the view
+            const updated = await axios.get(`http://localhost:8000/community/${communityID}`);
+            setPage(updated.data); //trigger re-render with updated members list
         } 
         catch(err){
             console.error("Failed to leave community:", err);

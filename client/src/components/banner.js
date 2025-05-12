@@ -122,8 +122,7 @@ export default function Banner(props){
                     Profile
                 </button>
 
-            )
-        }
+            )}
 
             <button id="button-create-post" className="create_post_btn" onClick={()=> 
                     {

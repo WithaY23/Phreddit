@@ -112,7 +112,7 @@ export default function ProfilePage(props){
             setPostsArr(new_posts.data);
             setCommentsArr(new_comments.data);
             setCommunitiesArr(new_communities.data);
-            window.location.reload();
+            setView("Profile-Page");
         }
         catch(err){
             console.log("fail to delete community.",err);
@@ -216,7 +216,7 @@ export default function ProfilePage(props){
 
             const new_users = await axios.get("http://localhost:8000/users/");
             setUsersArr(new_users.data);
-            window.location.reload();
+            setView("Profile-Page");
         }
         catch(err){
             console.log("fail to delete user.",err);
