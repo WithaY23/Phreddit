@@ -12,7 +12,24 @@ your application running.
 In the sections below, list and describe each contribution briefly.
 
 ## Team Member 1 Contribution
-<Team Member 1 Name>
+<yucan>
+-Banner  
+-Home page
+-Community Page
+-Search Page
+-New community Page
+-Register page, Community edit page, Profile Page
+-Posts, User schema
+-Deletion functionality
 
 ## Team Member 2 Contribution
-<Team Member 2 Name>
+<ayden>
+- Timestamps  
+- The Nav Bar  
+- The Post Page view  
+- The New Post Page view  
+- The New Comment Page view 
+-Communities schema
+-Communities, Linkflairs constraints
+-general server update requests
+-server linkflair requests
