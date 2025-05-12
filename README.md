@@ -11,7 +11,7 @@ your application running.
 
 In the sections below, list and describe each contribution briefly.
 
-## Team Member 1 Contribution
+## Yucan Contribution
 <yucan>
 -Banner  
 -Home page
@@ -22,7 +22,7 @@ In the sections below, list and describe each contribution briefly.
 -Posts, User schema
 -Deletion functionality
 
-## Team Member 2 Contribution
+## Ayden Contribution
 <ayden>
 - Timestamps  
 - The Nav Bar  
