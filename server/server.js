@@ -871,6 +871,52 @@ app.delete("/communities/:communityID", async (req,res) => {
     }
 });
 
+app.delete("/users/:userID", async (req, res) => {
+    try{
+        const userID = req.params.userID;
+
+        //delete all comments and replies by this user
+        const comments = await Comment.find({commentedBy: userID});
+        for (const comment of comments) {
+            await delete_comment_and_replies(comment._id);
+        }
+
+        //delete all posts by this user
+        const posts = await Post.find({postedBy: userID});
+        for(const post of posts){
+            for (const commentID of post.commentIDs) {
+                await delete_comment_and_replies(commentID);
+            }
+            await Post.findByIdAndDelete(post._id);
+            await Community.updateMany({}, {$pull:{postIDs: post._id }});
+            await Linkflair.updateMany({}, {$pull:{postIDs: post._id }});
+        }
+
+        //delete all communities created by this user
+        const communities = await Community.find({createdBy: userID});
+        for(const community of communities){
+            for(const postID of community.postIDs){
+                const post = await Post.findById(postID);
+                if(post){
+                    for(const commentID of post.commentIDs){
+                        await delete_comment_and_replies(commentID);
+                    }
+                    await Post.findByIdAndDelete(postID);
+                    await Linkflair.updateMany({}, { $pull:{ postIDs: postID}});
+                }
+            }
+            await Community.findByIdAndDelete(community._id);
+        }
+        //delete user
+        await User.findByIdAndDelete(userID);
+
+        res.status(200).json({ success: "User and associated data deleted"});
+    } catch (err) {
+        console.error("Failed to delete user and associated data:", err);
+        res.status(500).json({ error: "Failed to delete user" });
+    }
+});
+
 async function delete_comment_and_replies(commentID){
     try{
         const comment = await Comment.findById(commentID);
