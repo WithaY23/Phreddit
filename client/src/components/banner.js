@@ -1,6 +1,7 @@
 import '../stylesheets/banner.css'
 import { useState } from 'react';
 import axios from 'axios';
+import React from 'react'
 
 export default function Banner(props){
     const currentUser = props.currentUser;

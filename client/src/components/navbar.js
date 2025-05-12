@@ -140,8 +140,8 @@ function Community(props) //format of each community, display phreddit color if 
               } 
               catch (err){
                 console.error("Failed to fetch updated community", err);
-                alert("The community is no longer available, redirecting towards the home page")  
-                props.setView("Home-Page");
+                props.setView("Error-Page");
+                props.setPage(err);
               }
             }}>
             {props.content}
