@@ -197,8 +197,25 @@ export default function ProfilePage(props){
             </div>
         )
     }
+    async function delete_user(userID){
+        if(userID === user.id){   //can't delete itself.
+            alert("Admins cannot delete themselves.");
+            return;
+        }
+        try{
+            await axios.delete(`http://localhost:8000/users/${userID}`);  //send request to delete
+            console.log("deleted user success");
 
-    function phreddit_users() { //for users
+            const new_users = await axios.get("http://localhost:8000/users/");
+            setUsersArr(new_users.data);
+            window.location.reload();
+        }
+        catch(err){
+            console.log("fail to delete user.",err);
+        }
+    }
+
+    function phreddit_users(){ //for users
         if(usersArr.length === 0){
             axios.get("http://localhost:8000/users/")
                 .then(res => setUsersArr(res.data))
@@ -216,6 +233,14 @@ export default function ProfilePage(props){
                                 setView("Profile-Page");
                             }}>
                             {u.displayName} | {u.email} | {u.reputation}
+                        </button>
+                        <button className="delete-btn" 
+                                onClick={async () => {
+                                    const confirm = window.confirm("are you sure you want to delete this user")
+                                    if(confirm){
+                                        await delete_user(u._id);
+                                    }
+                                }}>Delete
                         </button>
                     </div>
                 ))}
