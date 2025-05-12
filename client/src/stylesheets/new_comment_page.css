@@ -28,14 +28,18 @@
 #new-comment-submit-container{
     margin-top:10px;
     display:grid;
-    grid-template-columns: 5fr 4fr 3fr;
+    grid-template-columns: 18fr 3fr 3fr 2fr;
 }
 
-#new-comment-username-container{
+/* #new-comment-username-container{
     display:inline-block;
     grid-column: 1;
-}
+} */
 #new-comment-submit-button{
+    grid-column:2;
+    width:120px;
+}
+#new-comment-delete-button{
     grid-column:3;
     width:120px;
 }

@@ -16,6 +16,7 @@ export default function EditPostPage(props) //post id, user id, view, setView
     
     const currentUser = props.currentUser;
     const postID = props.page;
+    console.log("Post ID in edit post page", postID);
 
     const setView= props.setView;
 

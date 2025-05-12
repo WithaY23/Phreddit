@@ -14,6 +14,9 @@ import WelcomePage from './WelcomePage.js';
 import LoginPage from './login_page.js'
 import axios from 'axios';
 import EditPostPage from './edit_post_page.js';
+import EditCommunityPage from './edit_community_page.js';
+import EditCommentPage from './edit_comment_page.js';
+
 
 //const model = new Model();
 
