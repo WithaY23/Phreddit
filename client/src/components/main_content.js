@@ -252,7 +252,7 @@ export default function Main_Content()
                 )
             case "Error-Page":
                 return(
-                    <ErrorPage setView={setView} />
+                    <ErrorPage setView={setView} page={page}/>
                 )
             default:
                 alert("AHHHHH");
