@@ -4,12 +4,35 @@
 Add design docs in *images/*
 
 ## Instructions to setup and run project
-Clearly explain the steps required to install and configure necessary packages,
-for both the server and the client, and the sequence of steps required to get
-your application running.
+set up server:
+cd server
+npm install express
+npm install mongoose
+npm install cors
+npm install bcryptjs
+npm install express
 
+set up client:
+cd client
+npm install react
+npm install axios
 
-In the sections below, list and describe each contribution briefly.
+Start MongoDB:
+mongod
+
+To start the server run:
+cd server
+node server.js
+
+To start the React app run:
+cd client
+npm start
+
+To initialize data run:
+node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPassword
+To reset data run:
+node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPassword -reset
+
 
 ## Yucan Contribution
 <yucan>
