@@ -92,7 +92,7 @@ export default function Banner(props){
                     onKeyDown={handle_input}/>
             </form>
 
-            {currentUser && (
+            {currentUser ? (
             <>
                 <button id="button-profile" className="profile_btn" onClick={() => setView("Profile-Page")}>
                     Profile
@@ -112,7 +112,13 @@ export default function Banner(props){
                     Logout
                 </button>
             </>
-            )}
+            ): (
+                <button id="button-profile" className="profile_btn" style={{backgroundColor: 'gray'}}>
+                    Profile
+                </button>
+
+            )
+        }
 
             <button id="button-create-post" className="create_post_btn" onClick={()=> 
                     {
