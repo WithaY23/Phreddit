@@ -72,8 +72,16 @@ export default function Main_Content()
 
                 let user;
                 if(currentUser) //if there is a user loggedin
-                {
+                {try
+                    {
                    user = await axios.get("http://localhost:8000/users/username/" + currentUser.id); //test if they were deleted
+                    }
+                    catch(err)
+                    {
+                        console.error(err);
+                        setView("Error-Page");
+                        setPage(err);
+                    }
                 }
                 // Update each state variable with the gathered data
                 setCommunitiesArr(comms.data); //
@@ -83,8 +91,7 @@ export default function Main_Content()
 
             } catch (err) {
                 console.error("Error fetching data:", err);
-                setView("Error-Page");
-                setPage(err);
+                
             }
         };
 
@@ -266,11 +273,11 @@ export default function Main_Content()
                 )
             case "Error-Page":
                 return(
-                    <ErrorPage setView={setView} page={page} setCurrentUser={setCurrentUser}/>
+                    <ErrorPage setView={setView} page={page} currentUser={currentUser} setCurrentUser={setCurrentUser}/>
                 )
             default:
-                alert("AHHHHH");
-                console.log("AHHHHHHHHHH");
+                alert("Empty Page");
+                console.log("Empty Page");
                 break;
         }
     }
