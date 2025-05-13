@@ -70,6 +70,11 @@ export default function Main_Content()
                 const posts = await axios.get("http://localhost:8000/posts/");
                 const comments = await axios.get("http://localhost:8000/comments/");
 
+                let user;
+                if(currentUser) //if there is a user loggedin
+                {
+                   user = await axios.get("http://localhost:8000/users/username/" + currentUser.id); //test if they were deleted
+                }
                 // Update each state variable with the gathered data
                 setCommunitiesArr(comms.data); //
                 setLinkFlairsArr(lFs.data);
@@ -78,11 +83,13 @@ export default function Main_Content()
 
             } catch (err) {
                 console.error("Error fetching data:", err);
+                setView("Error-Page");
+                setPage(err);
             }
         };
 
         get_data();
-    }, [view]);
+    }, [view,currentUser]);
     function display()
     {
         switch (view) 
@@ -259,7 +266,7 @@ export default function Main_Content()
                 )
             case "Error-Page":
                 return(
-                    <ErrorPage setView={setView} page={page}/>
+                    <ErrorPage setView={setView} page={page} setCurrentUser={setCurrentUser}/>
                 )
             default:
                 alert("AHHHHH");
