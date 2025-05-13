@@ -28,7 +28,8 @@ export default function EditPostPage(props) //post id, user id, view, setView
     const [postTextbox, set_Post_Textbox] = useState("");
     const [linkFlairTextbox, set_Link_Flair_Textbox] = useState(""); // Only loaded when user chooses to create new linkflair
 
-    const fetchData = async () =>
+    
+    useEffect( () => async function fetchData()
         {
             try{
             const c = await axios.get('http://localhost:8000/communities/')
@@ -56,9 +57,7 @@ export default function EditPostPage(props) //post id, user id, view, setView
             {
                 console.error("Loading New Post Page data error: ", err)
             }
-        }
-    useEffect(() =>{
-        fetchData()} , [props.view, fetchData])
+        } , [props.view, postID])
 
 
 
