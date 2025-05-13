@@ -244,9 +244,9 @@ function PostList(props){
         <>
             <div className="main-content-header" id="x-posts">
                 {view !== "Community-Page" ? (
-                    <span>{All_posts.length} posts</span>
+                    <span>{All_posts.filter(p => !p.isDivider).length} posts</span>
                 ) : (
-                    <span>{All_posts.length} posts |  {memberCount} members </span>
+                    <span>{All_posts.filter(p => !p.isDivider).length} posts | {memberCount} members</span>
                 )}
             </div>
             <div className="under-main-content-header" id="posts_container">
