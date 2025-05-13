@@ -234,11 +234,6 @@ export default function New_Comment_Page(props)
         }
     }
     }
-{/*
-    <span id="new-comment-username-container">
-     <label htmlFor="new-comment-username" className="new-requirement">Username: </label>
-<input type="text" id="new-comment-username" name="new-comment-username" value={username} onChange={(e) => set_username(e.target.value)}/>
-</span> */}
 return (
     <div className="under-main-content-header" id="posts_container">
         <div className="new-comment-container">

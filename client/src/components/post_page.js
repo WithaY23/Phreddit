@@ -131,7 +131,7 @@ function VoteDisplay(props) // props uses: contentType (post/comment), content (
         console.log(username.id);
         console.log("Current vote:", vote);
         setCurrentVote(vote);
-    },[props.view]) //onmount
+    },[props.view, content, username.id]) //onmount
 
 
 
@@ -250,7 +250,7 @@ export default function Post_Page(props)
             }
         }
         getDBData();
-    },[props.view,postID]);
+    },[props.view,postID, setPage, setView]);
     // function get_community_post_name(communities,post)
     // {
     // let comm = "";

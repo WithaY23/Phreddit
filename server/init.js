@@ -14,7 +14,7 @@ const CommentModel = require('./models/comments');
 const LinkFlairModel = require('./models/linkflairs');
 const PostModel = require('./models/posts');
 const UserModel = require('./models/users');
-const {encrypt, verifyEncryption} = require("./encrpytion")
+const {encrypt} = require("./encrpytion")
 
 //command parameter [database, admin email, displayname, password]
 //command: node server/init.js mongodb://127.0.0.1:27017/phreddit email displayname password
@@ -71,7 +71,7 @@ async function initializeDB()
         isAdmin: true
     });
 
-    const admin = await adminUser.save(); //save the admin user into 'User' database
+    await adminUser.save(); //save the admin user into 'User' database
 
     const hash1 = await encrypt("bigfeet");
     const user1 = new UserModel({
@@ -140,9 +140,9 @@ async function initializeDB()
     console.log("AHH")
 
     let linkFlairRef1 = await createLinkFlair(linkFlair1);
-    let linkFlairRef2 = await createLinkFlair(linkFlair2);
+    await createLinkFlair(linkFlair2);
     let linkFlairRef3 = await createLinkFlair(linkFlair3);
-    let linkFlairRef4 = await createLinkFlair(linkFlair4);
+     await createLinkFlair(linkFlair4);
     // let linkFlairRef5 = await createLinkFlair(linkFlair5);
 
     
