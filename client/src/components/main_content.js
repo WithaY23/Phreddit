@@ -197,6 +197,7 @@ export default function Main_Content()
                             page={page} 
                             setView={setView}
                             setPage={setPage}
+                            currentUser={currentUser}
                             communities={communitiesArr} 
                             linkFlairs={linkFlairsArr} 
                             posts={postsArr} 
