@@ -115,14 +115,68 @@ function PostList(props){
             };
         }
 
+        function separateAndSortPosts(posts, communities, currentUser, sortType, comments){
+            const userCommunityIDs = new Set();
+
+            console.log("separateAndSortPosts called");
+            console.log("total posts passed in:", posts.length);
+            console.log("currentUser:", currentUser?.displayName || "null");
+
+            if(currentUser && currentUser.id){  //safety check both exists
+                communities.forEach(c => {      //find the communties of user
+                    const isMember = c.members?.some(m => m?._id === currentUser.id);
+                    if(isMember){
+                        userCommunityIDs.add(c._id.toString());
+                    }
+                });
+                console.log(" user is in communities:", [...userCommunityIDs]);
+            }
+
+            const postsInUserCommunities = [];
+            const postsNotInUserCommunities = [];
+
+            for(const post of posts){
+                const community = communities.find(c => c.postIDs.some(p => (p._id || p) === post._id));
+                const postObj = create_post(post);
+                if(community && userCommunityIDs.has(community._id.toString())){
+                    postsInUserCommunities.push(postObj);
+                } 
+                else{
+                    postsNotInUserCommunities.push(postObj);
+                }
+            }
+
+            console.log("Posts in user communities:", postsInUserCommunities.length);
+            console.log("Posts not in user communities:", postsNotInUserCommunities.length);
+
+            const sortPosts = (arr) => {   //sorting functionality like before
+                if (sortType === "newest") return arr.sort((a, b) => b.postedDate - a.postedDate);
+                if (sortType === "oldest") return arr.sort((a, b) => a.postedDate - b.postedDate);
+                if (sortType === "active") return arr.sort((a, b) => b.activeDate - a.activeDate || b.postedDate - a.postedDate);
+                return arr;
+            };
+
+            if(!currentUser || !currentUser.id){
+                return sortPosts(posts.map(create_post));
+            }
+
+            const sortedIn = sortPosts(postsInUserCommunities);
+            const sortedOut = sortPosts(postsNotInUserCommunities);
+
+            //only show divider if there are posts in both groups
+            if(sortedIn.length > 0 && sortedOut.length > 0){
+                return [...sortedIn, { isDivider: true }, ...sortedOut];
+            } 
+            else{
+                return [...sortedIn, ...sortedOut];
+            }
+        }
         
         let new_posts = []; //array of posts
         
         if(view === "Home-Page"){
             //load all the posts
-            posts.forEach(post => {
-                new_posts.push(create_post(post));
-            });
+            new_posts = separateAndSortPosts(posts, communities, currentUser, sortType, comments);
         }
         else if(view === "Community-Page"){
             //create a filter that shows posts only within the community
@@ -136,19 +190,25 @@ function PostList(props){
         }
         else if(view === "Search-Page"){
             const search_terms = search_terms_string.split(" ");
+            const matchedPosts = [];
 
-            //filter base on title or content of posts, contents of comments
+            //collect matching posts based on title/content/comments
             posts.forEach(post => {
                 const title = post.title.toLowerCase();
                 const content = post.content.toLowerCase();
 
                 const found_in_post = search_terms.some(term => title.includes(term) || content.includes(term));
-                const found_in_comments = post.commentIDs.some(commentID => check_comment_and_replies(commentID, search_terms, comments));
+                const found_in_comments = post.commentIDs.some(commentID =>
+                    check_comment_and_replies(commentID, search_terms, comments)
+                );
 
-                if(found_in_post || found_in_comments){
-                    new_posts.push(create_post(post));
+                if (found_in_post || found_in_comments) {
+                    matchedPosts.push(post);
                 }
-            })
+            });
+
+            //pass matchedPosts into the same sorting & grouping logic
+            new_posts = separateAndSortPosts(matchedPosts, communities, currentUser, sortType, comments);
         }
         else{
             setAllPosts([]);
@@ -177,6 +237,8 @@ function PostList(props){
         
     }, [view, page, communities, linkFlairs, posts, comments, search_terms_string, sortType, setXposts]);
 
+    
+
     return( 
         //all posts will go under posts_container, <> make a single element
         <>
@@ -188,53 +250,44 @@ function PostList(props){
                 )}
             </div>
             <div className="under-main-content-header" id="posts_container">
-                {All_posts.map(post => (
-                    <div className="post" key={post.postID}onClick=
-                    {async ()=> 
-                    {
-                        try
-                        {
-                            const ps = (await axios.post("http://127.0.0.1:8000/posts/update-posts-views/" + post.postID)).data;
-                            props.setView("Post-Page");
-                        // const ps = posts.find((p) => p._id === post.postID); //FINICKY CODE, had to do based on post object
-                        // ps.views +=1;
-                        // const newPosts= [...posts].filter((p) => p._id !== post.postID);
-                        // newPosts.push(ps);
-                        // props.setPostsArr(newPosts) //FINICKY CODE, replicate shallow copy
-                            props.setPage(ps);
-                        }
-                        catch(err)
-                        {
-                            setView("Error-Page") //ERROR ADDED
-                            setPage(err);
-                        }
+                {All_posts.map((post, index) => {
+                if(post.isDivider){ //creates a divider
+                    return (
+                        <div key={`divider-${index}`} className="post-divider">
+                            <hr />
+                            <div className="divider-label">Posts from other communities</div>
+                            <hr />
+                        </div>
+                    );
+                }
 
-                        //FINICKY CODE, relies on recreating shallow instances
+            return (
+                <div className="post" key={post.postID} onClick={async () => {
+                    try {
+                        const ps = (await axios.post("http://127.0.0.1:8000/posts/update-posts-views/" + post.postID)).data;
+                        props.setView("Post-Page");
+                        props.setPage(ps);
+                    } catch (err) {
+                        setView("Error-Page");
+                        setPage(err);
                     }
-
-                    }> {/*ONCLICK, change view and page*/}
-                        <div id="post-1st-line">
-                            {post.community} | {post.username} | {timeConverter(post.postedDate)}
-                        </div>
-                        <div id="post-title-line">
-                            {post.post_title}
-                        </div>
-                        <div id="post-linkflair-line">
-                            {post.linkflair ? (
-                                <>[{post.linkflair}]</>
-                                ) : (
-                                <></>)
-                                }
-                            
-                        </div>
-                        <div id="post-content-line">
-                            {addHyperlinks(post.content)}
-                        </div>
-                        <div id="post-viewcount-line">
-                            Views: {post.viewcount} | Comments: {post.commentcount} | Likes: {post.voteCount}
-                        </div>
+                }}>
+                    <div id="post-1st-line">
+                        {post.community} | {post.username} | {timeConverter(post.postedDate)}
                     </div>
-                ))}
+                    <div id="post-title-line">{post.post_title}</div>
+                    <div id="post-linkflair-line">
+                        {post.linkflair ? `[${post.linkflair}]` : ""}
+                    </div>
+                    <div id="post-content-line">
+                        {addHyperlinks(post.content)}
+                    </div>
+                    <div id="post-viewcount-line">
+                        Views: {post.viewcount} | Comments: {post.commentcount} | Likes: {post.voteCount}
+                    </div>
+                </div>
+            );
+        })}
             </div>
         </>
     )
@@ -279,9 +332,9 @@ function find_earliest_comment_date(postID, posts, comments){
       }
     });
     return most_recent_date;
-  }
+}
   
-  function get_most_recent_comment_date(commentID, comments){
+function get_most_recent_comment_date(commentID, comments){
     //get comment
     const comment = comments.find(c => c._id === commentID);
     if(!comment){
@@ -297,4 +350,5 @@ function find_earliest_comment_date(postID, posts, comments){
       }
     });
     return most_recent_date;
-  }
+}
+

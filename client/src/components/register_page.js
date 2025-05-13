@@ -28,6 +28,20 @@ export default function RegisterPage(props) {
             return;
         }
 
+        const emailLocalPart = email.split("@")[0].toLowerCase();  //get infront of @
+        const first = firstName.toLowerCase();
+        const last = lastName.toLowerCase();
+        const display = displayName.toLowerCase();
+
+        if( //check all of them first last and displayName
+            emailLocalPart.includes(first) ||
+            emailLocalPart.includes(last) ||
+            emailLocalPart.includes(display)
+        ){
+            setFeedback("email cannot contain first name, last name, or display name.");
+            return;
+        }
+
         if(password !== confirmPassword){
             setFeedback("passwords do not match.");
             return;
