@@ -16,7 +16,7 @@ const User = require('./models/users');
 const {encrypt, verifyEncryption} = require("./encrpytion")
 
 const app = express();
-const port = 8000;
+// const port = 8000;
 
 app.use(cors({
     origin: "http://localhost:3000",
@@ -315,6 +315,11 @@ app.post("/comments/updateCommentVote/:newVote", async(req,res) =>{
                 res.status(200).json({comment: await Comment.findByIdAndUpdate(commentID, {$pull: {voteUp: voterID}, $push: {voteDown:voterID}}, {new:true }), voteStatus: voteStatus})  //may need to unencrypt votersname
                 break;
             }
+        default:
+            {
+                console.error("Unexpected number on voting on the comments");
+                res.status(500).json({error: "Failed to vote on comments"});
+            }
         }
     }
     catch(err)
@@ -590,6 +595,11 @@ app.post("/posts/updatePostVote/:newVote", async(req,res) =>{
                 console.log("After user update")
                 res.status(200).json({post: await Post.findByIdAndUpdate(postID, {$pull: {voteUp: voterID}, $push: {voteDown:voterID}}, {new:true }), voteStatus: voteStatus })//may need to unencrypt votersname
                 break;
+            }
+        default:
+            {
+                console.error("Unexpected number on voting on the comments");
+                res.status(500).json({error: "Failed to vote on comments"});
             }
         }
     }
