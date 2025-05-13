@@ -20,7 +20,7 @@ npm install react-scripts
 npm install axios
 
 Start MongoDB:
-mongod
+mongosh
 
 To start the server run:
 cd server
