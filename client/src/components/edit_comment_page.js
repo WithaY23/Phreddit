@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import today_date from "./today_date.mjs";
 import { verifyHyperlinks } from "./hyperlink";
 import '../stylesheets/new_comment_page.css';
 import axios from 'axios';
@@ -46,7 +45,7 @@ export default function Edit_Comment_Page(props)
             setLoading(false);
         }
         fetchData()
-    }, [props.view])
+    }, [props.view, originalCommentID])
     /*NEW
 
     */
@@ -116,7 +115,7 @@ export default function Edit_Comment_Page(props)
             try
             {
                 //update database with post
-                const newComment = (await axios.post("http://localhost:8000/comments/editcomment", {comment: comment})).data;
+                (await axios.post("http://localhost:8000/comments/editcomment", {comment: comment}))
                 setView("Profile-Page");
             }
             catch(err)
@@ -137,54 +136,7 @@ export default function Edit_Comment_Page(props)
 
     
 
-    function find_comment_post(commentID, comments, posts) //find the post to which a comment belongs
-    {
-        
-        return query_posts_comment(commentID);
-
-
-        function query_posts_comment(cmtID) //look through the posts to see if the commentID is found
-        {
-            const post = posts.find(post =>  //look through each post till one is found with comment
-                {
-                    let flag = false;
-                    post.commentIDs.forEach(cID =>  //loop through each post's commentIDs
-                        {
-                            if(cID === cmtID)
-                            {
-                                flag= post;
-                                return;
-                            }
-                        });
-                    if (flag === post)
-                    {
-                        return flag;
-                    }
-                    else
-                    {
-                        return undefined;
-                    }
-                });
-            if (!post)
-                {
-                    return find_comment_comment(cmtID); //recursively call the comment to find the nested comment
-                }
-                else
-                {
-                    return post;
-                }
-        
-        }
-        function find_comment_comment(cmtID) //find post in which a nested comment is contained recursively
-        {
-            const comment = comments.find((cmt) =>
-            {
-                return cmt.commentIDs.includes(cmtID)
-            })
-            
-            return query_posts_comment(comment._id);
-        }
-    }
+    
     }
     async function delete_comment(commentID) // to delete a comment
     { 

@@ -68,16 +68,19 @@ function Communities(props)
   function CommmunityList(props)
   {
     let originalCommunities = props.communities;
+    let sortedCommunities = props.communities;
     const communities = [];
 
     //Sort by user's most recent join date if logged in
     if(currentUser)
     {
       //make an axios request to get the user data
-     originalCommunities = userCommunityOrdered(originalCommunities, currentUser.id);
+     sortedCommunities = userCommunityOrdered(originalCommunities, currentUser.id);
     }
+
+    console.log("Sorted communities in navbar", sortedCommunities);
     
-    props.communities.forEach(community => 
+    sortedCommunities.forEach(community => 
       {
         //pass a reference to each community
         communities.push(
@@ -116,13 +119,7 @@ function Community(props) //format of each community, display phreddit color if 
       return (props.view === "Community-Page" && props.page._id === props.id) ?(
         <li key={props.id}>
           <button className='unstyled-button'
-            style={{backgroundColor: "#FF4500"}}
-            onClick={() => {
-              console.log("community-page: " + props.community.name);
-              props.setView("Community-Page");
-              //set community as the Page so it can be accessed
-              props.setPage(props.community);
-            }}>
+            style={{backgroundColor: "#FF4500"}}>
             {props.content}
           </button>
         </li>
