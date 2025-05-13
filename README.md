@@ -56,6 +56,7 @@ npm install --save-dev jest supertest
 -Posts, User schema
 -Deletion functionality
 -Class /Sequence Diagram
+-Server Requests
 
 ## Ayden Contribution
 <ayden>
