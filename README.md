@@ -55,6 +55,7 @@ npm install --save-dev jest supertest
 -Register page, Community edit page, Profile Page
 -Posts, User schema
 -Deletion functionality
+-Class /Sequence Diagram
 
 ## Ayden Contribution
 <ayden>
