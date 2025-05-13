@@ -90,9 +90,9 @@ export function userCommunityOrdered(communities = "",user) //expecting objects 
     //check user communities against actual communities, return list with user communities upfront
   const orderedCommunities = communities.toSorted((cmty1, cmty2) =>
     {
-      if(cmty1.members.includes(user)) //need to rework database to populate members
+      if(cmty1.members.some((member) => member._id === user)) //need to rework database to populate members
       {
-        if(cmty2.members.includes(user))
+        if(cmty2.members.some((member) => member._id === user))
         {
           return new Date(cmty2.startDate) - new Date(cmty1.startDate)
         }
@@ -101,7 +101,7 @@ export function userCommunityOrdered(communities = "",user) //expecting objects 
           return -1;
         }
       }
-      else if(cmty2.members.includes(user))
+      else if(cmty2.members.some((member) => member._id === user))
       {
         return 1;
       }

@@ -33,6 +33,13 @@ export default function RegisterPage(props) {
             return;
         }
 
+        const emailID = email.split('@')[0];
+        if(password.includes(firstName) || password.includes(lastName) || password.includes(displayName) || password.includes(emailID))
+        {
+            setFeedback("password cannot contain the firstname, lastname, displayname, or email.");
+            return;
+        }
+
         try{
             const response = await axios.post("http://localhost:8000/users/register", {
                 firstName,

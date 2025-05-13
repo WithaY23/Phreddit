@@ -1,5 +1,4 @@
 import { useState, useEffect} from "react";
-import today_date from "./today_date.mjs";
 import '../stylesheets/new_post_page.css';
 import { verifyHyperlinks } from "./hyperlink";
 import {userCommunityOrdered} from './time_conversion.mjs';
@@ -59,7 +58,7 @@ export default function EditPostPage(props) //post id, user id, view, setView
             }
         }
     useEffect(() =>{
-        fetchData()} , [props.view])
+        fetchData()} , [props.view, fetchData])
 
 
 
