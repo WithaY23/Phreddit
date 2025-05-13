@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "server directory for final project of CSE 316, S25 - Fake Reddit (Phreddit), SBU",
   "main": "server.js",
-  "jest": {},
+  "jest": {
+    "testEnvironment": "node"
+  },
   "scripts": {
     "test": "jest"
   },

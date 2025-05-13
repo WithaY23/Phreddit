@@ -16,6 +16,7 @@ npm install express
 set up client:
 cd client
 npm install react
+npm install react-scripts
 npm install axios
 
 Start MongoDB:
@@ -34,6 +35,15 @@ node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPa
 To reset data run:
 node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPassword -reset
 ```
+
+Setup tests:
+navigate to project-s25...
+
+npm install --save-dev jest
+
+npm install --save-dev jest @testing-library/react @testing-library/jest-dom @testing-library/user-event
+
+npm install --save-dev jest supertest
 
 ## Yucan Contribution
 <yucan>
