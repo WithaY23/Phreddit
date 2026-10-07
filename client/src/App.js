@@ -4,6 +4,7 @@ import './stylesheets/App.css';
 import MainContent from './components/main_content.js';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
+axios.defaults.baseURL = '/api';
 
 function App() {
   return (

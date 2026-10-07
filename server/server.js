@@ -17,6 +17,15 @@ const {encrypt, verifyEncryption} = require("./encrpytion")
 
 const app = express();
 // const port = 8000;
+const mongoDB = process.env.MONGODB_URI;
+const sessionSecret = process.env.SESSION_SECRET;
+
+if (!mongoDB) {
+    throw new Error('MONGODB_URI environment variable is required');
+}
+if (!sessionSecret) {
+    throw new Error('SESSION_SECRET environment variable is required');
+}
 
 app.use(cors({
     origin: "http://localhost:3000",
@@ -26,24 +35,23 @@ app.use(cors({
 // MUST STORE USER SESSION IN DB
 app.use(
     session({
-        secret: "supersecret difficult to guess string",
+        secret: sessionSecret,
         resave: false,
         saveUninitialized: false,
         //store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/bcrypt_test'})
-        store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/phreddit'}),
+        store: MongoStore.create({ mongoUrl: mongoDB}),
         cookie: {
             httpOnly:true,
             sameSite: 'lax',       //allows cross orgin get requests
-            //secure: true,
+            secure: process.env.NODE_ENV === 'production',
             maxAge: 1000*60*60*24, //1 day
         }
     })
 );
 
 
-
 //connect to MongoDB, database name: phreddit, port: 27017
-const mongoDB = 'mongodb://127.0.0.1:27017/phreddit';
+//connect to MongoDB, database name: phreddit, port: 27017
 mongoose.connect(mongoDB);
 
 //get connection
@@ -56,6 +64,12 @@ db.on('connected', function(){
 });
 
 app.use(express.json()); //allow server side to receive data sent from client side in json
+app.use((req, res, next) => {
+    if (req.url === '/api' || req.url.startsWith('/api/')) {
+        req.url = req.url.slice(4) || '/';
+    }
+    next();
+});
 
 //------------------Defining Routes------------------------
 
@@ -994,6 +1008,10 @@ async function delete_comment_and_replies(commentID){
 //-------------------------------------------------------------------------------------
 
 //start the server
-app.listen(8000, () => {console.log("Server listening on port 8000...");});
+if (require.main === module) {
+    const port = process.env.PORT || 8000;
+    app.listen(port, () => {console.log(`Server listening on port ${port}...`);});
+}
 
+module.exports = app;
 

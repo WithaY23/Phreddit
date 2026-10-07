@@ -24,6 +24,8 @@ mongosh
 
 To start the server run:
 cd server
+export MONGODB_URI=mongodb://127.0.0.1:27017/phreddit
+export SESSION_SECRET=replace-with-a-local-session-secret
 node server.js
 
 To start the React app run:
@@ -35,6 +37,8 @@ node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPa
 To reset data run:
 node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPassword -reset
 ```
+
+For Vercel, configure `MONGODB_URI` with the connection string for a reachable MongoDB deployment and `SESSION_SECRET` with a strong random value. The API is publicly routed under `/api`; the client calls it through same-origin URLs.
 
 Setup tests:
 navigate to project-s25...
