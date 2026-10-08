@@ -31,7 +31,22 @@ node server.js
 To start the React app run:
 cd client
 npm start
+```
 
+To run the production build locally, build the client and start the combined static client/API server:
+```sh
+cd client
+npm run build
+
+cd ../server
+export MONGODB_URI=mongodb://127.0.0.1:27017/phreddit
+export SESSION_SECRET=replace-with-a-local-session-secret
+npm run start:built-client
+```
+
+Open `http://localhost:8000`. This serves the built client and routes `/api/*` requests through the existing Express API. Do not use `serve -s build` by itself for this setup; it has no API proxy.
+
+```
 To initialize data run:
 node init.js mongodb://127.0.0.1:27017/phreddit yourEmail yourDisplayName yourPassword
 To reset data run:
