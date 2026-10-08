@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import axios from 'axios';
 
 import '../stylesheets/login_page.css';
@@ -55,7 +55,7 @@ export default function RegisterPage(props) {
         }
 
         try{
-            const response = await axios.post("http://localhost:8000/users/register", {
+            const response = await axios.post("/users/register", {
                 firstName,
                 lastName,
                 email,

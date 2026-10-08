@@ -59,10 +59,10 @@ function PostList(props){
         async function fetchData(){
             try{
                 const [p, c, cm, lf] = await Promise.all([
-                    axios.get("http://localhost:8000/posts"),
-                    axios.get("http://localhost:8000/comments"),
-                    axios.get("http://localhost:8000/communities"),
-                    axios.get("http://localhost:8000/linkflairs"),
+                    axios.get("/posts"),
+                    axios.get("/comments"),
+                    axios.get("/communities"),
+                    axios.get("/linkflairs"),
                 ]);
 
                 setPosts(p.data);
@@ -76,7 +76,7 @@ function PostList(props){
             }
         }
         fetchData();
-    }, [view, page, search_terms_string, sortType]);
+    }, [view, page, search_terms_string, sortType, setPage, setView]);
 
     //side effects| runs after component renders, [model] allows re-run when model changes
     useEffect(() => {
@@ -235,7 +235,7 @@ function PostList(props){
         setXposts(new_posts.length);
         
         
-    }, [view, page, communities, linkFlairs, posts, comments, search_terms_string, sortType, setXposts]);
+    }, [view, page, communities, linkFlairs, posts, comments, search_terms_string, sortType, setXposts, currentUser]);
 
     
 
@@ -264,7 +264,7 @@ function PostList(props){
             return (
                 <div className="post" key={post.postID} onClick={async () => {
                     try {
-                        const ps = (await axios.post("http://127.0.0.1:8000/posts/update-posts-views/" + post.postID)).data;
+                        const ps = (await axios.post("/posts/update-posts-views/" + post.postID)).data;
                         props.setView("Post-Page");
                         props.setPage(ps);
                     } catch (err) {

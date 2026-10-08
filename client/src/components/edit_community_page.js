@@ -3,11 +3,11 @@ import {verifyHyperlinks} from "./hyperlink";
 import axios from "axios";
 
 export default function EditCommunity(props){
-    const setCommunities = props.setCommunities;
+    // const setCommunities = props.setCommunities;
     const setView = props.setView;
     const setPage = props.setPage;
     const communityID = props.page;  //community id
-    const currentUser = props.currentUser;
+    // const currentUser = props.currentUser;
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -18,7 +18,7 @@ export default function EditCommunity(props){
     useEffect(() => {
         async function fetchCommunity(){
             try{
-                const res = await axios.get(`http://localhost:8000/community/${communityID}`);
+                const res = await axios.get(`/community/${communityID}`);
                 setName(res.data.name);
                 setDescription(res.data.description);
             }
@@ -72,7 +72,7 @@ export default function EditCommunity(props){
     async function fix_community(){
         if (!check_valid()) return;
         try{
-            await axios.put(`http://localhost:8000/communities/${communityID}`,{
+            await axios.put(`/communities/${communityID}`,{
                 name: name.trim(),
                 description: description.trim()
             });
@@ -88,7 +88,7 @@ export default function EditCommunity(props){
 
     async function delete_community(){
         try{
-            await axios.delete(`http://localhost:8000/communities/${communityID}`);
+            await axios.delete(`/communities/${communityID}`);
             alert("Community deleted successfully.");
             setView("Profile-Page");  //after this, ProfilePage will fetch fresh data
         } 

@@ -30,10 +30,10 @@ export default function ProfilePage(props){
     {
         const get_data = async () =>{
             try{
-                const comms = await axios.get("http://localhost:8000/communities/");
-                const posts = await axios.get("http://localhost:8000/posts/");
-                const comments = await axios.get("http://localhost:8000/comments/");
-                const rep = await axios.get(`http://localhost:8000/users/${user.id}/reputation`);  //only get reputation
+                const comms = await axios.get("/communities/");
+                const posts = await axios.get("/posts/");
+                const comments = await axios.get("/comments/");
+                const rep = await axios.get(`/users/${user.id}/reputation`);  //only get reputation
 
                 // Update each state variable with the gathered data
                 setCommunitiesArr(comms.data); 
@@ -50,26 +50,26 @@ export default function ProfilePage(props){
         };
 
         get_data();
-    }, [view]);
+    }, [view, setPage, setView, user.id]);
 
     useEffect(() => {
         if(isAdmin && selected === "Users" && usersArr.length === 0){
-            axios.get("http://localhost:8000/users/")
+            axios.get("/users/")
                 .then(res => setUsersArr(res.data))
                 .catch(err => console.error("Failed to load users", err));
         }
-    }, [selected, isAdmin]);
+    }, [selected, isAdmin, usersArr.length]);
 
 
     async function delete_post(postID){ //delete post request
         try{
-            await axios.delete(`http://localhost:8000/posts/${postID}`);  //send request to delete
+            await axios.delete(`/posts/${postID}`);  //send request to delete
             console.log("deleted post success");
 
             //update postArr and comment
             const [new_posts, new_comments] = await Promise.all([
-                axios.get("http://localhost:8000/posts/"),
-                axios.get("http://localhost:8000/comments/")
+                axios.get("/posts/"),
+                axios.get("/comments/")
             ]);
             setPostsArr(new_posts.data);
             setCommentsArr(new_comments.data);
@@ -118,14 +118,14 @@ export default function ProfilePage(props){
 
     async function delete_community(communityID){
         try{
-            await axios.delete(`http://localhost:8000/communities/${communityID}`);  //send request to delete
+            await axios.delete(`/communities/${communityID}`);  //send request to delete
             console.log("deleted community success");
 
             //update postArr and comment
             const [new_posts, new_comments, new_communities] = await Promise.all([
-                axios.get("http://localhost:8000/posts/"),
-                axios.get("http://localhost:8000/comments/"),
-                axios.get("http://localhost:8000/communities/")
+                axios.get("/posts/"),
+                axios.get("/comments/"),
+                axios.get("/communities/")
             ]);
             setPostsArr(new_posts.data);
             setCommentsArr(new_comments.data);
@@ -176,10 +176,10 @@ export default function ProfilePage(props){
 
     async function delete_comment(commentID){ // to delete a comment
         try{
-            await axios.delete(`http://localhost:8000/comments/${commentID}`);  //send request to delete
+            await axios.delete(`/comments/${commentID}`);  //send request to delete
             console.log("deleted comment success");
 
-            const new_comments = await axios.get("http://localhost:8000/comments/");
+            const new_comments = await axios.get("/comments/");
             setCommentsArr(new_comments.data);
         }
         catch(err){
@@ -229,10 +229,10 @@ export default function ProfilePage(props){
             return;
         }
         try{
-            await axios.delete(`http://localhost:8000/users/${userID}`);  //send request to delete
+            await axios.delete(`/users/${userID}`);  //send request to delete
             console.log("deleted user success");
 
-            const new_users = await axios.get("http://localhost:8000/users/");
+            const new_users = await axios.get("/users/");
             setUsersArr(new_users.data);
             setView("Profile-Page");
         }
@@ -251,7 +251,7 @@ export default function ProfilePage(props){
                         <button className="post-title-btn"
                             onClick={async () => {
                                 try {
-                                    const res = await axios.get(`http://localhost:8000/users/${u._id}/info`);
+                                    const res = await axios.get(`/users/${u._id}/info`);
                                     setViewingUser(res.data);        //update what we show
                                     setReputation(res.data.reputation)
                                     setSelected("Posts");            //switch to post view
@@ -326,7 +326,7 @@ export default function ProfilePage(props){
                 {isAdmin && viewingUser.displayName !== user.displayName && (
                 <button onClick={async () => {
                     try{
-                        const res = await axios.get(`http://localhost:8000/users/${user.id}/info`); //refetch info
+                        const res = await axios.get(`/users/${user.id}/info`); //refetch info
                         setViewingUser(res.data);
                         setReputation(res.data.reputation);
                         setSelected("Users");

@@ -46,7 +46,7 @@ export default function Main_Content()
     const noBannerPages = ["Welcome-Page", "Login-Page", "Error-Page", "Register-Page"];
 
     useEffect(() => {
-        axios.get("http://localhost:8000/users/session", { withCredentials: true })
+        axios.get("/users/session", { withCredentials: true })
             .then((res) => {
                 console.log("Session found:", res.data);
                 setCurrentUser(res.data);
@@ -65,16 +65,16 @@ export default function Main_Content()
     {
         const get_data = async () =>{
             try {
-                const comms = await axios.get("http://localhost:8000/communities/");
-                const lFs = await axios.get("http://localhost:8000/linkflairs/");
-                const posts = await axios.get("http://localhost:8000/posts/");
-                const comments = await axios.get("http://localhost:8000/comments/");
+                const comms = await axios.get("/communities/");
+                const lFs = await axios.get("/linkflairs/");
+                const posts = await axios.get("/posts/");
+                const comments = await axios.get("/comments/");
 
-                let user;
+                // let user;
                 if(currentUser) //if there is a user loggedin
                 {try
                     {
-                   user = await axios.get("http://localhost:8000/users/username/" + currentUser.id); //test if they were deleted
+                //    user = await axios.get("/users/username/" + currentUser.id); //test if they were deleted
                     }
                     catch(err)
                     {
